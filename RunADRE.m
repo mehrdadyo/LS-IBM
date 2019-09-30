@@ -4,11 +4,8 @@ close all
 profile on
 
 addpath(genpath('../'));
-<<<<<<< HEAD
 
 
-=======
->>>>>>> eb085a46553fa7c4bd741708684b0aee23326b43
 
 [StateVar,VARIABLES,DOMAIN,BC,IBM,LS]=SetUpVariables;
 
