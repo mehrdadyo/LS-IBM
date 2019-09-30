@@ -3,7 +3,7 @@ clear all
 close all
 profile on
 
-
+addpath(genpath('../'));
 
 [StateVar,VARIABLES,DOMAIN,BC,IBM,LS]=SetUpVariables;
 
