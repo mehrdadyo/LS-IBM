@@ -1,4 +1,4 @@
-function [StateVar,VARIABLES,DOMAIN,BC,IBM,LS]=SetUpVariables
+function [StateVar,VARIABLES,DOMAIN,BC,IBM,LS]= setUpVariables
 %% =========================== Domain size ================================
 
 diamcyl = 1;                  % Diameter of cylinders
@@ -250,3 +250,15 @@ StateVar = struct('U',U,'V',V,'P',P,'phi_old',phi_old);
 
 LS = struct('psi',psi);
 [LS] = LSnormals(LS,DOMAIN);
+
+StateVar.U_old = StateVar.U;
+StateVar.V_old = StateVar.V;
+StateVar.P_old = StateVar.P;
+
+% StateVar.U_star = StateVar.U;
+% StateVar.V_star = StateVar.V;
+% StateVar.U_star_old = StateVar.U_star;
+% StateVar.V_star_old = StateVar.V_star;
+        
+%% ==============================
+StateVar.phi = StateVar.phi_old;

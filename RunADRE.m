@@ -5,63 +5,19 @@ profile on
 
 addpath(genpath('../'));
 
-
-
 [StateVar,VARIABLES,DOMAIN,BC,IBM,LS]=SetUpVariables;
 
 %% ==============================
 % load 'initial at any time '
 
-StateVar.U_old = StateVar.U;
-StateVar.V_old = StateVar.V;
-StateVar.P_old = StateVar.P;
-
-% StateVar.U_star = StateVar.U;
-% StateVar.V_star = StateVar.V;
-% StateVar.U_star_old = StateVar.U_star;
-% StateVar.V_star_old = StateVar.V_star;
-        
-%% ==============================
-StateVar.phi = StateVar.phi_old;
 
 %% object location and IBM coefficients
 % [IBM_coeffU,IBM_coeffV,IBM_coeffP]=IBMcoeffs(IBM,DOMAIN);
 
-%% U-momentum diffusive flux coeff
-Flux.fl=1;
-[Flux.Diffu_U]=DiffFlux(VARIABLES,Flux.fl,DOMAIN,BC);
-
-%% V-momentum diffusive flux coeff
-Flux.fl=-1;
-[Flux.Diffu_V]=DiffFlux(VARIABLES,Flux.fl,DOMAIN);
-
-%% Scalar Transport diffusive flux coeff
-Flux.fl=0;
-[Flux.Diffu_P]=DiffFlux(VARIABLES,Flux.fl,DOMAIN);
+Flux = getDiffFlux(VARIABLES, DOMAIN,BC);
 
 
 
-%% Control VAriables
-ControlVar.PISO = 1;
-ControlVar.time=0;
-ControlVar.timedt = 50000;
-ControlVar.savedat=50;
-ControlVar.rat=floor(0.01/VARIABLES.dt);
-
-ControlVar.tol=1e-3;
-ControlVar.f=0;
-ControlVar.tolbicg=10^(-5); %% max tol for bicon
-ControlVar.maxit=2000;   %% max iter for bicon 
-
-ControlVar.flow_steady= 1;
-ControlVar.disc_scheme_vel = 2;
-StateVar.P_cor_vec = zeros(1,(DOMAIN.imax-1)*(DOMAIN.jmax-1))';
-
-ControlVar.flow_steady = 0;
-
-ControlVar.tol_q=1e-5;
-ControlVar.tolbicg_c=5e-5;
-ControlVar.maxit_c=2000;
 
 %% Level set at time t = dt
 [LS] = LSeqSolve(LS,StateVar,VARIABLES,DOMAIN);
