@@ -1,4 +1,4 @@
-function ControlVar = setUpControlVar
+function ControlVar = setUpControlVar(VARIABLES, DOMAIN)
 
 %% Control VAriables
 ControlVar.PISO = 1;

@@ -16,7 +16,7 @@ addpath(genpath('../'));
 
 Flux = getDiffFlux(VARIABLES, DOMAIN,BC);
 
-
+ControlVar = setUpControlVar(VARIABLES, DOMAIN);
 
 
 %% Level set at time t = dt
@@ -38,9 +38,9 @@ ycir=r*sin(ang);
 xc = IBM.xc;
 yc = IBM.yc;
 
-for i = 1:40
+for iTime = 1:40
         
-    if i == 101
+    if iTime == 101
         VARIABLES.dt = 2*VARIABLES.dt;
     end
     ControlVar.resi=1;
