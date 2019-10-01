@@ -5,7 +5,7 @@ profile on
 
 addpath(genpath('../'));
 
-[StateVar,VARIABLES,DOMAIN,BC,IBM,LS]=SetUpVariables;
+[StateVar,VARIABLES,DOMAIN,BC,IBM,LS] = setUpVariables;
 
 %% ==============================
 % load 'initial at any time '
