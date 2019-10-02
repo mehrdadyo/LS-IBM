@@ -6,7 +6,7 @@ xcir=r*cos(ang);
 ycir=r*sin(ang);
 xc = IBM.xc;
 yc = IBM.yc;
-for iTime = 1:40
+for iTime = 1:140
         
     if iTime == 101
         VARIABLES.dt = 2*VARIABLES.dt;
@@ -35,7 +35,7 @@ for iTime = 1:40
 %     hold on
 %     plot(xc+xcir,yc+ycir,'k');
     
-    figure(1)
+    figure(11)
     contourf(DOMAIN.xp(1:end-10),DOMAIN.yp,(LS.nx(1:end-10,:))',200,...
         'LineStyle','none');
     colormap jet
@@ -43,7 +43,7 @@ for iTime = 1:40
     hold on
     plot(xc+xcir,yc+ycir,'k');
     
-    figure(2)
+    figure(12)
     contourf(DOMAIN.xp(1:end-10),DOMAIN.yp,(LS.psi(1:end-10,:)<0)',200,...
         'LineStyle','none');
     colormap jet
@@ -192,6 +192,10 @@ function [u,v] = LSVelocity(phi,Da,Pe,DOMAIN,LS)
 
     nx = LS.nx;
     ny = LS.ny;
+    
+    tanTheta = ny./nx;
+    theta = atan(tanTheta);
+    theta = abs(theta);
 
     x = DOMAIN.xp;
     y = DOMAIN.yp;
@@ -252,8 +256,8 @@ function [u,v] = LSVelocity(phi,Da,Pe,DOMAIN,LS)
                 u_I = 1;% -(Da/Pe)*(2*phi_x_pr-1/2*phi_x_dpr)/(3/2+Da*d);
 
 
-                uI(i,j) = -u_I*nx(i,j);
-                vI(i,j) = -0.2* u_I*ny(i,j);
+                uI(i,j) = theta(i,j)*nx(i,j);
+                vI(i,j) = theta(i,j)*ny(i,j);
 
 
 
