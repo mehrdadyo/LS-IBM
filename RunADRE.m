@@ -30,13 +30,13 @@ ControlVar = setUpControlVar(VARIABLES, DOMAIN);
 % ycir=r*sin(ang);
 % xc = 3.5;
 % yc = 3.5;
-r= IBM.diamcyl/2;
-ang=0:0.01:2*pi;
-
-xcir=r*cos(ang);
-ycir=r*sin(ang);
-xc = IBM.xc;
-yc = IBM.yc;
+% r= IBM.diamcyl/2;
+% ang=0:0.01:2*pi;
+% 
+% xcir=r*cos(ang);
+% ycir=r*sin(ang);
+% xc = IBM.xc;
+% yc = IBM.yc;
 
 for iTime = 1:40
         
