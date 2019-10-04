@@ -14,7 +14,7 @@ function psi = LSreinitialization(VARIABLES, DOMAIN, LS)
 
         [psinp] = LSFindDerivative(u,v,psi,DOMAIN,equation);
 
-        [G]= LSreInitilization(psinp,psi_n);
+        [G]= LSreinitilizationCoeff(psinp,psi_n);
         fl = double(G ~= 0);
         SignPsi = psi_n./sqrt(psi_n.^2+epsSign.^2);
     %     psi_m1 = psi - dtau*sign(psi_n).*(G-1);
@@ -28,7 +28,7 @@ function psi = LSreinitialization(VARIABLES, DOMAIN, LS)
         elseif scheme == "RK2" 
 
             [psinp] = LSFindDerivative(u,v,psi_m1,DOMAIN,equation);
-            [G]= LSreInitilization(psinp,psi_n);
+            [G]= LSreinitilizationCoeff(psinp,psi_n);
             fl = double(G ~= 0);
     %         psi_m2 = psi_m1 - dtau*sign(psi_n).*(G-1);
             psi_m2 = psi_m1 - dtau*SignPsi.*(G-1).*fl;
@@ -39,7 +39,7 @@ function psi = LSreinitialization(VARIABLES, DOMAIN, LS)
         elseif scheme == "RK3"
 
             [psinp] = LSFindDerivative(u,v,psi_m1,DOMAIN,equation);
-            [G]= LSreInitilization(psinp,psi_n);
+            [G]= LSreinitilizationCoeff(psinp,psi_n);
             fl = double(G ~= 0);
 
     %         psi_m2 = psi_m1 - dtau*sign(psi_n).*(G-1);
@@ -48,7 +48,7 @@ function psi = LSreinitialization(VARIABLES, DOMAIN, LS)
             psi_m12 = 0.75 * psi + 0.25 * psi_m2;
 
             [psinp] = LSFindDerivative(u,v,psi_m12,DOMAIN,equation);
-            [G]= LSreInitilization(psinp,psi_n);
+            [G]= LSreinitilizationCoeff(psinp,psi_n);
             fl = double(G ~= 0);
 
     %         psi_m32 = psi_m12 - dtau*sign(psi_n).*(G-1);

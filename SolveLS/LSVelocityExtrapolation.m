@@ -1,4 +1,4 @@
-function [u,v] = LSVelocityExtrapolation(phi,Da,Pe,DOMAIN,LS)
+function [u,v] = LSVelocityExtrapolation(VARIABLES, StateVar, DOMAIN, LS)
 
 %% ===================
 % This function extrapolates the velocity from the interface to a banded
@@ -10,6 +10,11 @@ psi = LS.psi;
 
 nx = LS.nx;
 ny = LS.ny;
+
+phi = StateVar.phi;
+Da = VARIABLES.Da;
+Pe = VARIABLES.Pe;
+
 
 x = DOMAIN.xp;
 y = DOMAIN.yp;

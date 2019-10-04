@@ -247,6 +247,7 @@ IBM = struct('q',q,'alpha',alpha,'beta',beta,'q_phi',q_phi,'alpha_phi',...
     'nrgrainy',nrgrainy,'BQu',BQu,'BQv',BQv,'BQp',BQp);
 
 StateVar = struct('U',U,'V',V,'P',P,'phi_old',phi_old);
+StateVar.P_cor_vec = zeros(1,(DOMAIN.imax-1)*(DOMAIN.jmax-1))';
 
 LS = struct('psi',psi);
 [LS] = LSnormals(LS,DOMAIN);
