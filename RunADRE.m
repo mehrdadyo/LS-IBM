@@ -1,7 +1,7 @@
 clc
 clear all
 close all
-profile on
+% profile on
 
 addpath(genpath('../'));
 
