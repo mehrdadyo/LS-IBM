@@ -263,4 +263,4 @@ StateVar.P_old = StateVar.P;
         
 %% ==============================
 StateVar.phi = StateVar.phi_old;
-VARIABLES.LSband = 10*min(min(DOMAIN.dxp));
+VARIABLES.LSband = 10

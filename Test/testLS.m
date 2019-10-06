@@ -6,7 +6,7 @@ xcir=r*cos(ang);
 ycir=r*sin(ang);
 xc = IBM.xc;
 yc = IBM.yc;
-for iTime = 1:140
+for iTime = 1:250
         
     if iTime == 101
         VARIABLES.dt = 2*VARIABLES.dt;
@@ -34,22 +34,23 @@ for iTime = 1:140
 %     axis equal
 %     hold on
 %     plot(xc+xcir,yc+ycir,'k');
-    
-    figure(11)
-    contourf(DOMAIN.xp(1:end-10),DOMAIN.yp,(LS.nx(1:end-10,:))',200,...
-        'LineStyle','none');
-    colormap jet
-    axis equal
-    hold on
-    plot(xc+xcir,yc+ycir,'k');
-    
-    figure(12)
-    contourf(DOMAIN.xp(1:end-10),DOMAIN.yp,(LS.psi(1:end-10,:)<0)',200,...
-        'LineStyle','none');
-    colormap jet
-    axis equal
-    hold on
-    plot(xc+xcir,yc+ycir,'k');
+    if mod(iTime,10)
+        figure(11)
+        contourf(DOMAIN.xp(1:end-10),DOMAIN.yp,(LS.nx(1:end-10,:))',200,...
+            'LineStyle','none');
+        colormap jet
+        axis equal
+        hold on
+        plot(xc+xcir,yc+ycir,'k');
+
+        figure(12)
+        contourf(DOMAIN.xp(1:end-10),DOMAIN.yp,(LS.psi(1:end-10,:)<0)',200,...
+            'LineStyle','none');
+        colormap jet
+        axis equal
+        hold on
+        plot(xc+xcir,yc+ycir,'k');
+    end
 
 end
 
@@ -124,7 +125,7 @@ function LS = LSeqSolver(LS,StateVar,VARIABLES,DOMAIN)
 
         [psinp] = LSFindDerivative(u,v,psi,DOMAIN,equation);
 
-        [G]= LSreInitilization(psinp,psi_n);
+        [G]= LSreinitilizationCoeff(psinp,psi_n);
         fl = double(G ~= 0);
         SignPsi = psi_n./sqrt(psi_n.^2+epsSign.^2);
     %     psi_m1 = psi - dtau*sign(psi_n).*(G-1);
@@ -256,8 +257,8 @@ function [u,v] = LSVelocity(phi,Da,Pe,DOMAIN,LS)
                 u_I = 1;% -(Da/Pe)*(2*phi_x_pr-1/2*phi_x_dpr)/(3/2+Da*d);
 
 
-                uI(i,j) = theta(i,j)*nx(i,j);
-                vI(i,j) = theta(i,j)*ny(i,j);
+                uI(i,j) = u_I*nx(i,j);
+                vI(i,j) = 0.1*u_I*ny(i,j);
 
 
 

@@ -8,8 +8,10 @@ function psi = solveHJEq(LS, VARIABLES, DOMAIN)
  
     equation = "LevelSetEqn";
     scheme = VARIABLES.TimeSchemeLS;
+    h = VARIABLES.LSband;
+
     %% convective fluxes
-    [psinp] = LSFindDerivative(u,v,psi_n,DOMAIN,equation);
+    [psinp] = LSFindDerivative(u,v,psi_n,DOMAIN,equation, h);
 
     %% Time integrations
     psi_n1 = psi_n - dt*( u.*psinp.psi_x + v.*psinp.psi_y );
@@ -20,7 +22,7 @@ function psi = solveHJEq(LS, VARIABLES, DOMAIN)
 
     elseif scheme == "RK2" 
 
-        [psinp] = LSFindDerivative(u,v,psi_n1,DOMAIN,equation);
+        [psinp] = LSFindDerivative(u,v,psi_n1,DOMAIN,equation, h);
 
 
 
@@ -31,14 +33,14 @@ function psi = solveHJEq(LS, VARIABLES, DOMAIN)
 
     elseif scheme == "RK3"
 
-        [psinp] = LSFindDerivative(u,v,psi_n1,DOMAIN,equation);
+        [psinp] = LSFindDerivative(u,v,psi_n1,DOMAIN,equation, h);
 
         psi_n2 = psi_n1 - dt*( u.*psinp.psi_x + v.*psinp.psi_y );
 
 
         psi_n12 = 0.75 * psi_n + 0.25 * psi_n2;
 
-        [psinp] = LSFindDerivative(u,v,psi_n1,DOMAIN,equation);
+        [psinp] = LSFindDerivative(u,v,psi_n1,DOMAIN,equation, h);
 
         psi_n32 = psi_n12 - dt * ( u.*psinp.psi_x + v.*psinp.psi_y );
 
