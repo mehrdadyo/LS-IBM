@@ -24,25 +24,22 @@ ControlVar = setUpControlVar(VARIABLES, DOMAIN);
 
 [IBM_coeffU,IBM_coeffV,IBM_coeffP] = LSIBMcoeffs(IBM,DOMAIN,LS);
 
-% r= 0.5;
-% ang=0:0.01:2*pi;
-% xcir=r*cos(ang);
-% ycir=r*sin(ang);
-% xc = 3.5;
-% yc = 3.5;
-% r= IBM.diamcyl/2;
-% ang=0:0.01:2*pi;
-% 
-% xcir=r*cos(ang);
-% ycir=r*sin(ang);
-% xc = IBM.xc;
-% yc = IBM.yc;
+r= 0.5;
+ang=0:0.01:2*pi;
+xcir=r*cos(ang);
+ycir=r*sin(ang);
+xc = 3.5;
+yc = 3.5;
+r= IBM.diamcyl/2;
+ang=0:0.01:2*pi;
 
-for iTime = 1:40
+xcir=r*cos(ang);
+ycir=r*sin(ang);
+xc = IBM.xc;
+yc = IBM.yc;
+
+for iTime = 1:150
         
-    if iTime == 101
-        VARIABLES.dt = 2*VARIABLES.dt;
-    end
     ControlVar.resi=1;
     ControlVar.ii=0;
     ControlVar.time = ControlVar.time+VARIABLES.dt;
@@ -111,32 +108,38 @@ for iTime = 1:40
 % 
     [IBM_coeffU,IBM_coeffV,IBM_coeffP] = LSIBMcoeffs(IBM,DOMAIN,LS);
 % 
-    
+    if ~mod(iTime, 10)
+        flowfilename = strcat('dataRDE',num2str(iTime),'dt.mat');
+        matfile = strcat('Output/', flowfilename);
+ 
+        save(matfile,'-v7.3','-struct','CurrentStateVar');
 
-    figure(13)
-    contourf(DOMAIN.xp(1:end-10),DOMAIN.yp,(LS.u(1:end-10,:))',200,...
-        'LineStyle','none');
-    colormap jet
-    axis equal
-    hold on
-    plot(xc+xcir,yc+ycir,'k');
-    
-    figure(1)
-    contourf(DOMAIN.xp(1:end-10),DOMAIN.yp,(LS.nx(1:end-10,:))',200,...
-        'LineStyle','none');
-    colormap jet
-    axis equal
-    hold on
-    plot(xc+xcir,yc+ycir,'k');
-    
-    figure(2)
-    contourf(DOMAIN.xp(1:end-10),DOMAIN.yp,(LS.psi(1:end-10,:))',200,...
-        'LineStyle','none');
-    colormap jet
-    axis equal
-    hold on
-    plot(xc+xcir,yc+ycir,'k');
-    pause(0.05)
+
+        figure(13)
+        contourf(DOMAIN.xp(1:end-10),DOMAIN.yp,(LS.u(1:end-10,:))',200,...
+            'LineStyle','none');
+        colormap jet;colorbar
+        axis equal
+        hold on
+        plot(xc+xcir,yc+ycir,'k');
+
+        figure(1)
+        contourf(DOMAIN.xp(1:end-10),DOMAIN.yp,(StateVar.phi(1:end-10,:))',200,...
+            'LineStyle','none');
+        colormap jet;colorbar
+        axis equal
+        hold on
+        plot(xc+xcir,yc+ycir,'k');
+
+        figure(2)
+        contourf(DOMAIN.xp(1:end-10),DOMAIN.yp,(LS.psi(1:end-10,:)<0)',200,...
+            'LineStyle','none');
+        colormap jet;colorbar
+        axis equal
+        hold on
+        plot(xc+xcir,yc+ycir,'k');
+    end
+%     pause(0.05)
 
 
 end

@@ -26,7 +26,7 @@ ly = freeSouth + nrgrainy*diamcyl + (nrgrainy-1)*S + ...
 
 %% ======================== Additional variables ==========================
 
-Re = 1;
+Re = 10;
 uinflow = 1;
 Pe = 1;
 D = 1/Pe;
@@ -110,7 +110,7 @@ r=1.00941835135602;
 
 %% ========================= Time Steps ===================================
 
-dt_man=5e-3;                             %% Arbitrary time step
+dt_man=1e-3;                             %% Arbitrary time step
 dt_diff =  Re/((1/min(min(DOMAIN.dxu)))^2 + (1/min(min(DOMAIN.dyu)))^2); %% Diffisiun time step                  
 dt_cour = 1/sqrt(2*(uinflow^2)*...
     ((1/min(min(DOMAIN.dxu)))^2 + (1/min(min((DOMAIN.dyu)))^2))); % Courant time
