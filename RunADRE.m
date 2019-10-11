@@ -38,7 +38,7 @@ ycir=r*sin(ang);
 xc = IBM.xc;
 yc = IBM.yc;
 
-for iTime = 1:1000
+for iTime = 1:700
         
     ControlVar.resi=1;
     ControlVar.ii=0;
@@ -71,7 +71,8 @@ for iTime = 1:1000
     
     CurrentStateVar =  struct('U',StateVar.U,'V',StateVar.V,...
             'P',StateVar.P,'phi',StateVar.phi,'psi',LS.psi,...
-            'time',ControlVar.time);
+            'time',ControlVar.time, 'IBM_coeffU', IBM_coeffU,...
+            'IBM_coeffV', IBM_coeffV, 'IBM_coeffP', IBM_coeffP);
     
   
     
@@ -97,13 +98,7 @@ for iTime = 1:1000
         save(matfile,'-v7.3','-struct','CurrentStateVar');
 
 
-%         figure(13)
-%         contourf(DOMAIN.xp(1:end-10),DOMAIN.yp,(LS.u(1:end-10,:))',200,...
-%             'LineStyle','none');
-%         colormap jet;colorbar
-%         axis equal
-%         hold on
-%         plot(xc+xcir,yc+ycir,'k');
+
 
         figure(1)
         contourf(DOMAIN.xp(1:end-10),DOMAIN.yp,(StateVar.phi(1:end-10,:))',200,...
@@ -115,6 +110,14 @@ for iTime = 1:1000
 
         figure(2)
         contourf(DOMAIN.xp(1:end-10),DOMAIN.yp,(LS.psi(1:end-10,:)<0)',200,...
+            'LineStyle','none');
+        colormap jet;colorbar
+        axis equal
+        hold on
+        plot(xc+xcir,yc+ycir,'k');
+        
+        figure(3)
+        contourf(DOMAIN.xu(1:end-10),DOMAIN.yu,(StateVar.u(1:end-10,:))',200,...
             'LineStyle','none');
         colormap jet;colorbar
         axis equal
