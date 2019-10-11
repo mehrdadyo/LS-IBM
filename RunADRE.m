@@ -38,7 +38,7 @@ ycir=r*sin(ang);
 xc = IBM.xc;
 yc = IBM.yc;
 
-for iTime = 1:150
+for iTime = 1:1000
         
     ControlVar.resi=1;
     ControlVar.ii=0;
@@ -66,7 +66,7 @@ for iTime = 1:150
     
    
 %% ========================================================================
-%                       SAVE THE DATA            
+%                       CurrentStateVar            
 %  ========================================================================     
     
     CurrentStateVar =  struct('U',StateVar.U,'V',StateVar.V,...
@@ -75,39 +75,21 @@ for iTime = 1:150
     
   
     
-%     if mod(i,ControlVar.savedat) == 0
-%         flowfilename = strcat('dataRDE',num2str(i),'dt.mat');
-%         save(flowfilename,'-v7.3','-struct','CurrentStateVar');
-% 
-%         figure(4)
-%         contourf(DOMAIN.xp,DOMAIN.yp,LS.psi',200,'LineStyle','none');
-%         colormap jet
-%         colorbar
-%         axis equal
-%         for iCircle = 1:size(IBM.xc,1)
-%             for jCircle = 1:size(IBM.yc,2)
-% 
-%                 hold on
-%                 plot(IBM.xc(iCircle,jCircle)+xcir,...
-%                     IBM.yc(iCircle,jCircle)+ycir,'w');
-% 
-%             end
-%         end
-% %         pause(0.1)
-% %         
-% 
-% 
-% 
-%         
-%     end    
 %% ========================================================================
 %                      LEVEL SET EQUATION            
 %% ========================================================================
-    [LS] = LSeqSolve(LS,StateVar,VARIABLES,DOMAIN);
-%     [LS] = LSnormals(LS,DOMAIN);
-% 
-    [IBM_coeffU,IBM_coeffV,IBM_coeffP] = LSIBMcoeffs(IBM,DOMAIN,LS);
-% 
+
+    if ~mod(iTime, 10)
+
+        [LS] = LSeqSolve(LS,StateVar,VARIABLES,DOMAIN);
+        [IBM_coeffU,IBM_coeffV,IBM_coeffP] = LSIBMcoeffs(IBM,DOMAIN,LS);
+    end
+    
+%% ========================================================================
+%                      PLOTS and SAVE            
+%% ========================================================================
+    
+    
     if ~mod(iTime, 10)
         flowfilename = strcat('dataRDE',num2str(iTime),'dt.mat');
         matfile = strcat('Output/', flowfilename);
@@ -115,13 +97,13 @@ for iTime = 1:150
         save(matfile,'-v7.3','-struct','CurrentStateVar');
 
 
-        figure(13)
-        contourf(DOMAIN.xp(1:end-10),DOMAIN.yp,(LS.u(1:end-10,:))',200,...
-            'LineStyle','none');
-        colormap jet;colorbar
-        axis equal
-        hold on
-        plot(xc+xcir,yc+ycir,'k');
+%         figure(13)
+%         contourf(DOMAIN.xp(1:end-10),DOMAIN.yp,(LS.u(1:end-10,:))',200,...
+%             'LineStyle','none');
+%         colormap jet;colorbar
+%         axis equal
+%         hold on
+%         plot(xc+xcir,yc+ycir,'k');
 
         figure(1)
         contourf(DOMAIN.xp(1:end-10),DOMAIN.yp,(StateVar.phi(1:end-10,:))',200,...
