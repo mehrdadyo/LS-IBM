@@ -8,8 +8,8 @@ nrgrainy = 1;
 
 S = 2*diamcyl;                % Space between centers of objects
 
-freeEast = 5*diamcyl;        %exit length after cylinders
-freeWest = 5*diamcyl;      % entrance length after
+freeEast = 15*diamcyl;        %exit length after cylinders
+freeWest = 4*diamcyl;      % entrance length after
 freeNorth = 5*diamcyl;
 freeSouth = 5*diamcyl;
 
@@ -26,9 +26,9 @@ ly = freeSouth + nrgrainy*diamcyl + (nrgrainy-1)*S + ...
 
 %% ======================== Additional variables ==========================
 
-Re = 10;
+Re = 60;
 uinflow = 1;
-Pe = 1;
+Pe = 20;
 D = 1/Pe;
 phi_inlet = 1;
 phi_init = 1;
@@ -68,7 +68,7 @@ P0_e = 0;
 % -alpha(dphi/dn_w)-beta phi=q
 q_phi = 0;
 alpha_phi = D;
-beta_phi = 1;
+beta_phi = -.2;
 BQp = 0;
 
 BC_e_phi=1;
@@ -102,7 +102,7 @@ end
 
 %% ======================== Coordinates ===================================
 uniform = 1;
-dvdxdy= 81;
+dvdxdy= 41;
 A=4;
 expon=0;
 r=1.00941835135602;

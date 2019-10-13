@@ -38,7 +38,7 @@ ycir=r*sin(ang);
 xc = IBM.xc;
 yc = IBM.yc;
 
-for iTime = 1:700
+for iTime = 6002:20000
         
     ControlVar.resi=1;
     ControlVar.ii=0;
@@ -72,7 +72,8 @@ for iTime = 1:700
     CurrentStateVar =  struct('U',StateVar.U,'V',StateVar.V,...
             'P',StateVar.P,'phi',StateVar.phi,'psi',LS.psi,...
             'time',ControlVar.time, 'IBM_coeffU', IBM_coeffU,...
-            'IBM_coeffV', IBM_coeffV, 'IBM_coeffP', IBM_coeffP);
+            'IBM_coeffV', IBM_coeffV, 'IBM_coeffP', IBM_coeffP, 'uI', LS.u, ...
+            'vI', LS.v);
     
   
     
@@ -91,7 +92,7 @@ for iTime = 1:700
 %% ========================================================================
     
     
-    if ~mod(iTime, 10)
+    if ~mod(iTime, 100)
         flowfilename = strcat('dataRDE',num2str(iTime),'dt.mat');
         matfile = strcat('Output/', flowfilename);
  
@@ -100,29 +101,29 @@ for iTime = 1:700
 
 
 
-        figure(1)
-        contourf(DOMAIN.xp(1:end-10),DOMAIN.yp,(StateVar.phi(1:end-10,:))',200,...
-            'LineStyle','none');
-        colormap jet;colorbar
-        axis equal
-        hold on
-        plot(xc+xcir,yc+ycir,'k');
-
-        figure(2)
-        contourf(DOMAIN.xp(1:end-10),DOMAIN.yp,(LS.psi(1:end-10,:)<0)',200,...
-            'LineStyle','none');
-        colormap jet;colorbar
-        axis equal
-        hold on
-        plot(xc+xcir,yc+ycir,'k');
-        
-        figure(3)
-        contourf(DOMAIN.xu(1:end-10),DOMAIN.yu,(StateVar.u(1:end-10,:))',200,...
-            'LineStyle','none');
-        colormap jet;colorbar
-        axis equal
-        hold on
-        plot(xc+xcir,yc+ycir,'k');
+%         figure(1)
+%         contourf(DOMAIN.xp(1:end-10),DOMAIN.yp,(phi(1:end-10,:))',200,...
+%             'LineStyle','none');
+%         colormap jet;colorbar
+%         axis equal
+%         hold on
+%         plot(xc+xcir,yc+ycir,'k');
+% 
+%         figure(2)
+%         contourf(DOMAIN.xp(1:end-10),DOMAIN.yp,(psi(1:end-10,:)<0)',200,...
+%             'LineStyle','none');
+%         colormap jet;colorbar
+%         axis equal
+%         hold on
+%         plot(xc+xcir,yc+ycir,'k');
+%         
+%         figure(3)
+%         contourf(DOMAIN.xu(1:end-10),DOMAIN.yu,(U(1:end-10,:))',200,...
+%             'LineStyle','none');
+%         colormap jet;colorbar
+%         axis equal
+%         hold on
+%         plot(xc+xcir,yc+ycir,'k');
     end
 %     pause(0.05)
 
