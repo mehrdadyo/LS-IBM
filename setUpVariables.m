@@ -8,10 +8,10 @@ nrgrainy = 1;
 
 S = 2*diamcyl;                % Space between centers of objects
 
-freeEast = 15*diamcyl;        %exit length after cylinders
+freeEast = 10*diamcyl;        %exit length after cylinders
 freeWest = 4*diamcyl;      % entrance length after
-freeNorth = 5*diamcyl;
-freeSouth = 5*diamcyl;
+freeNorth = 4*diamcyl;
+freeSouth = 4*diamcyl;
 
 lx = freeWest + nrgrainx*diamcyl + (nrgrainx-1)*S + ...
     freeEast; % Length in x direction
@@ -28,7 +28,7 @@ ly = freeSouth + nrgrainy*diamcyl + (nrgrainy-1)*S + ...
 
 Re = 60;
 uinflow = 1;
-Pe = 20;
+Pe = 100;
 D = 1/Pe;
 phi_inlet = 1;
 phi_init = 1;
@@ -101,16 +101,22 @@ end
 
 
 %% ======================== Coordinates ===================================
-uniform = 1;
-dvdxdy= 41;
-A=4;
-expon=0;
-r=1.00941835135602;
-[DOMAIN]=Coordinates(xc,yc,lx,ly,A,diamcyl,dvdxdy,expon,r,uniform);
+Grid.r = 1.05;
+Grid.expon = 1;
+Grid.A = 4;
+Grid.dvdxdy = 31;
+Grid.uniform = 0;
+Grid.zoomedAreax = 4;
+Grid.zoomedAreay = 4;
+Grid.Lx_l = 2.5;
+Grid.Ly_b = 2.5;
 
+
+[DOMAIN]=Coordinates(lx,ly,diamcyl,Grid);
+r = 1.05;
 %% ========================= Time Steps ===================================
 
-dt_man=1e-3;                             %% Arbitrary time step
+dt_man=5e-4;                             %% Arbitrary time step
 dt_diff =  Re/((1/min(min(DOMAIN.dxu)))^2 + (1/min(min(DOMAIN.dyu)))^2); %% Diffisiun time step                  
 dt_cour = 1/sqrt(2*(uinflow^2)*...
     ((1/min(min(DOMAIN.dxu)))^2 + (1/min(min((DOMAIN.dyu)))^2))); % Courant time

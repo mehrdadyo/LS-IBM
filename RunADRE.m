@@ -38,7 +38,7 @@ ycir=r*sin(ang);
 xc = IBM.xc;
 yc = IBM.yc;
 
-for iTime = 6002:20000
+for iTime = 1:20000
         
     ControlVar.resi=1;
     ControlVar.ii=0;

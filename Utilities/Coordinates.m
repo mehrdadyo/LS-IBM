@@ -1,4 +1,4 @@
-function DOMAIN=Coordinates(xc,yc,lx,ly,A,diamcyl,dvdxdy,expon,r,uniform)
+function DOMAIN=Coordinates(lx,ly,diamcyl,Grid)
 % this function sets up the staggered grid points for u, v, p. we have a 
 % refined area in the middle of the domain.
 
@@ -6,118 +6,120 @@ function DOMAIN=Coordinates(xc,yc,lx,ly,A,diamcyl,dvdxdy,expon,r,uniform)
 
 %% ---------- define first parameters --------------
 % dvdxdy=31.25;
+
+r = Grid.r;
+expon = Grid.expon;
+A = Grid.A;
+dvdxdy = Grid.dvdxdy;
+uniform = Grid.uniform;
+
+zoomedAreax = Grid.zoomedAreax;
+zoomedAreay = Grid.zoomedAreay;
+
+Lx_l = Grid.Lx_l;
+Ly_b = Grid.Ly_b;
+
 imax_fine = dvdxdy*lx+1;  % Grid size in x direction (imax=3 0*8+2-1)
 jmax_fine = dvdxdy*ly+1;  % Grid size in y direction (jmax=18*8+2-1)
 dx = lx/(imax_fine-1);    % Grid spacing in x direction
 dy = ly/(jmax_fine-1);    % Grid spacing in y direction
 
 % exponential growth
- if expon==1
-    ind1=0:1:250;
-    dxy=1/125*r.^ind1;
-    dxyrev=fliplr(dxy);
- end
-
-
-%% ---------- refined area--------------
-if uniform == 0
-    Lx_r=4*diamcyl;                 % horizontal length of fine area
+ n = ceil(log(A)/log(r));
+ indx = 1:n;
+ 
+ if ~uniform
+    %% refined area  
     dx_r=dx/A;                      % refined grid size
-    x_r=(dx_r:dx_r:Lx_r);           % refined grid size
+    xuRef = Lx_l + (dx_r : dx_r : zoomedAreax * diamcyl);  
+    %% refined area  
+    dy_r=dy/A;                      % refined grid size
+    yvRef = Ly_b + (dy_r : dy_r : zoomedAreay * diamcyl);
 
-    Ly_r=4*diamcyl;                 % vertical length of fine area 
-    dy_r=dy/A;                      % refined grid size 
-    y_r=(dy_r/2:dy_r:Ly_r-dy_r/2);  % refined grid size     
+    if expon
+        %% transional zone
+        x_trans = ((1 - r.^indx)/(1 - r)) * dx_r;
+        y_trans = ((1 - r.^indx)/(1 - r)) * dy_r;
+        resX = Lx_l - x_trans(end);
+        resY = Ly_b - y_trans(end);
+    elseif ~expon
+        
+        x_trans = [];
+        y_trans = [];
+        
+        resX = Lx_l;
+        resY = Ly_b;
+    end
+    
+    %% coarse grid area
+    %==================  Lx_l ====================================
+    % ++++++++ xu +++++++++++++
+    m = floor(resX/dx);
+    indxCoarse = 0:1:m-1;
 
-    % Left
-    Lx_l=xc-2*diamcyl;
-    % Right starting
-    Lx_r=xc+2*diamcyl;
-    % Bottom
-    Ly_b=yc-2*diamcyl;             % vertical length of coarse area at bottom
-    % Top starting
-    Ly_t=yc+2*diamcyl;
-
-    xu_2=x_r+Lx_l;
-    xv_2=x_r+Lx_l-dx_r/2;
-
-
-    yv_2=y_r+Ly_b+dy_r/2;
-    yu_2=y_r+Ly_b;
-
-    %% ---------- coarsed area--------------
-
-    if expon==0
-
-    %% U nodes ---------------------------
-        xu_1=(0:dx:Lx_l);
-        xu_3=(Lx_r+dx:dx:lx);
-        xu=[xu_1 xu_2 xu_3];         
-
-        yu_1=(-dy/2:dy:Ly_b-dy/2);
-        yu_3=(Ly_t+dy/2:dy:ly+dy/2);
-        yu=[yu_1 yu_2 yu_3];
-
-    %% V nodes -----------------------------
-        xv_1=(-dx/2:dx:Lx_l-dx/2);
-        xv_3=(Lx_r+dx/2:dx:lx+dx/2);
-        xv=[xv_1 xv_2 xv_3];         
-
-        yv_1=(0:dy:Ly_b);
-        yv_3=(Ly_t+dy:dy:ly);
-        yv=[yv_1 yv_2 yv_3];
-    elseif expon==1
-
-    %% xU nodes ---------------------------
-        xu_1=zeros(1,length(dxy));
-        xu_3=zeros(1,length(dxy)-1);
-
-        for i=2:length(dxyrev)
-            xu_1(i)=xu_1(i-1)+dxyrev(i);
-        end
-
-        for i=2:length(dxy)
-            xu_3(i)=xu_3(i-1)+dxy(i-1);
-        end
-        xu_3=xu_3(2:end)+xu_2(end);
-        lx_rem=lx-xu_3(end);
-        i_rem=floor(lx_rem/(xu_3(end)-xu_3(end-1)));
-        xu_4=xu_3(end)+(1:1:i_rem)*(xu_3(end)-xu_3(end-1));
-        xu=[xu_1 xu_2 xu_3 xu_4];
+    dx_mod = resX/m;
+    x_coarse_L = indxCoarse .*dx_mod;
+    x_transL = Lx_l - [fliplr(x_trans) 0];
+    xu = [x_coarse_L x_transL xuRef];
 
 
+    %==================  Lx_r ====================================
+    xu = [xu xu(end)+x_trans];
+    res = lx - xu(end);
+    m = floor(res/dx);
+    dx_mod = res/m;
+    indxCoarse = 1:m;
+    x_coarse_R = xu(end) + indxCoarse .*dx_mod;
+    xu = [xu x_coarse_R];
+
+    % ++++++++ xv +++++++++++++
+    xv = (xu(1:end-1)+xu(2:end))/2;
+    xv = [-dx_mod/2 xv xv(end)+dx_mod];
+    
+    
+    %==================  Ly_b ====================================
+    % ++++++++ xu +++++++++++++
+    
+    m = floor(resY/dy);
+    indxCoarse = 0:1:m-1;
+
+    dy_mod = resY/m;
+    y_coarse_B = indxCoarse .*dy_mod;
+    y_transB = Ly_b - [fliplr(y_trans) 0];
+    yv = [y_coarse_B y_transB yvRef];
 
 
-    %% yV nodes -----------------------------
-        yv_1=zeros(1,length(dxy));
-        yv_3=zeros(1,length(dxy)-1);
+    %==================  Ly_u ====================================
+    yv = [yv yv(end)+y_trans];
+    res = ly - yv(end);
+    m = floor(res/dy);
+    dy_mod = res/m;
+    indxCoarse = 1:m;
+    y_coarse_U = yv(end) + indxCoarse .*dy_mod;
+    yv = [yv y_coarse_U];
 
-        for i=2:length(dxyrev)
-            yv_1(i)=yv_1(i-1)+dxyrev(i);
-        end
+    % ++++++++ xv +++++++++++++
+    yu = (yv(1:end-1)+yv(2:end))/2;
+    yu = [-dy_mod/2 yu yu(end)+dy_mod];
 
-        for i=2:length(dxy)
-            yv_3(i)=yv_3(i-1)+dxy(i-1);
-        end
-        yv_3=yv_3(2:end)+yv_2(end);
-        yv=[yv_1 yv_2 yv_3];
 
-    %% yU and xV
-        yu=1/2*(yv(1:end-1)+yv(2:end));
-        yu=[2*yv(1)-yu(1) yu 2*yv(end)-yu(end)];
 
-        xv=1/2*(xu(1:end-1)+xu(2:end));
-        xv=[2*xu(1)-xv(1) xv 2*xu(end)-xv(end)];
-
-    end    
-elseif uniform == 1
+ elseif uniform 
     xu = 0:dx:lx;
     xv = -dx/2:dx:lx+dx/2;
-    
+
     yu = -dy/2:dy:ly+dy/2;
     yv = 0:dy:ly;
-end
-%% P nodes --------------------------
+
+     
+     
+     
+ end
+ 
+ 
+
+
+%% scalar nodes --------------------------
 xp=xv;
 yp=yu;
 
@@ -125,15 +127,15 @@ imax=length(xp)-1;
 jmax=length(yp)-1;
 
 % size dx_u=Nx-1 x Ny+1
-dxu=xu(2:end)-xu(1:end-1);
-dxv=xv(2:end)-xv(1:end-1);
-dxp=xp(2:end)-xp(1:end-1);
+dxu=diff(xu);
+dxv=diff(xv);
+dxp=diff(xp);
 
 
 
-dyu=yu(2:end)-yu(1:end-1);
-dyv=yv(2:end)-yv(1:end-1);
-dyp=yp(2:end)-yp(1:end-1);
+dyu=diff(yu);
+dyv=diff(yv);
+dyp=diff(yp);
 
 
 CoEWu=(xp(2:end-1)-xu(1:end-1))./dxu;
