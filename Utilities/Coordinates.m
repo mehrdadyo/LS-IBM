@@ -12,6 +12,7 @@ expon = Grid.expon;
 A = Grid.A;
 dvdxdy = Grid.dvdxdy;
 uniform = Grid.uniform;
+lengthUnit = Grid.lengthUnit;
 
 zoomedAreax = Grid.zoomedAreax;
 zoomedAreay = Grid.zoomedAreay;
@@ -19,8 +20,9 @@ zoomedAreay = Grid.zoomedAreay;
 Lx_l = Grid.Lx_l;
 Ly_b = Grid.Ly_b;
 
-imax_fine = dvdxdy*lx+1;  % Grid size in x direction (imax=3 0*8+2-1)
-jmax_fine = dvdxdy*ly+1;  % Grid size in y direction (jmax=18*8+2-1)
+
+imax_fine = ceil(dvdxdy*lx/lengthUnit)+1;  % Grid size in x direction (imax=3 0*8+2-1)
+jmax_fine = ceil(dvdxdy*ly/lengthUnit)+1;  % Grid size in y direction (jmax=18*8+2-1)
 dx = lx/(imax_fine-1);    % Grid spacing in x direction
 dy = ly/(jmax_fine-1);    % Grid spacing in y direction
 
@@ -42,7 +44,7 @@ dy = ly/(jmax_fine-1);    % Grid spacing in y direction
         y_trans = ((1 - r.^indx)/(1 - r)) * dy_r;
         resX = Lx_l - x_trans(end);
         resY = Ly_b - y_trans(end);
-        if resY<dx | resX<dx
+        if resY<dx || resX<dx
             error('The transition grid exceeds the coarse grid area length. Please reduce the corase grid cell or A.')
         end
     elseif ~expon
