@@ -25,13 +25,15 @@ ly = freeSouth + nrgrainy*diamcyl + (nrgrainy-1)*S + ...
 
 
 %% ======================== Additional variables ==========================
-
+% - Re is in fact kinematic viscosity
+% - Pe is 1/(diffusion coeffcient)
 Re = 1e-2;
 uinflow = 0.12;
 Pe = 1e5;
 D = 1/Pe;
 phi_inlet = 1e-5;
 phi_init = 1e-5;
+density = 1;
 %% =============================== BCs ====================================
 
 %% velocities and flow
@@ -68,7 +70,7 @@ P0_e = 0;
 % -alpha(dphi/dn_w)-beta phi=q
 q_phi = 0;
 alpha_phi = D                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ;
-beta_phi = -178;
+beta_phi = -10^(-4.5)*1000;
 BQp = 0;
 
 BC_e_phi=1;
@@ -108,9 +110,9 @@ Grid.dvdxdy = 61;
 Grid.uniform = 0;
 Grid.zoomedAreax = 2;
 Grid.zoomedAreay = 2;
-Grid.Lx_l = 1.5;
-Grid.Ly_b = 0.5;
-
+Grid.Lx_l = 1.5/50;
+Grid.Ly_b = 0.5/50;
+Grid.lengthUnit = diamcyl;
 
 [DOMAIN]=Coordinates(lx,ly,diamcyl,Grid);
 %% ========================= Time Steps ===================================
@@ -228,7 +230,7 @@ alpha_u=1;
 alpha_v=alpha_u;
 alpha_p=1;
 
-VARIABLES = struct('D',D,'Re',Re,...
+VARIABLES = struct('D',D,'Re',Re,'density', density,...
     'alpha_u',alpha_u,'alpha_v',alpha_v,...
     'alpha_p',alpha_p,'dt',dt,'dtVec',Dt,'Da',beta_phi,'Pe',Pe,...
     'n_iter_ReLS',n_iter_ReLS,'dtau',dtau,'TimeSchemeLS',TimeSchemeLS,...

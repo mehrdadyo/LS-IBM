@@ -42,6 +42,9 @@ dy = ly/(jmax_fine-1);    % Grid spacing in y direction
         y_trans = ((1 - r.^indx)/(1 - r)) * dy_r;
         resX = Lx_l - x_trans(end);
         resY = Ly_b - y_trans(end);
+        if resY<dx | resX<dx
+            error('The transition grid exceeds the coarse grid area length. Please reduce the corase grid cell or A.')
+        end
     elseif ~expon
         
         x_trans = [];

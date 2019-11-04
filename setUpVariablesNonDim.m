@@ -110,6 +110,7 @@ Grid.zoomedAreax = 2;
 Grid.zoomedAreay = 2;
 Grid.Lx_l = 1.5;
 Grid.Ly_b = 0.5;
+Grid.lengthUnit = 1;
 
 
 [DOMAIN]=Coordinates(lx,ly,diamcyl,Grid);
