@@ -1,4 +1,5 @@
 # LS-IBM
+## This code is under developement, i.e. not final version.
 A level set immersed boundary method for reactive transport. The level set method is used to find the exact location of the evolving solid-fluid interface. Then with the knowledge of the interface we can get the normals and use the immersed boundary method (IBM) to enforce the no-slip BC for velocity as well as Robin or Neumann BC for reactive transport.
 
 
