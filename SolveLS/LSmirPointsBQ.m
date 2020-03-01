@@ -1,6 +1,7 @@
 function [landa,landa_g_1,landa_g_2,landa_g_3,landa_g_4,A1_g,I_e,J_e,...
     I1,J1,I2,J2,I3,J3,I4,J4,numg,landa_g_5,landa_g_6,I5,J5,I6,J6,nx_g,ny_g] = ...
-    LSmirPointsBQ(x,y,alpha,beta,q,X_g,Y_g,BQ,dx,dy,I_g,J_g,LS)
+    LSmirPointsBQ(x,y,alpha,beta,q,X_g,Y_g,BQ,dx,dy,I_g,J_g,LS,...
+    UVP, phi, treshold)
 
 psi = LS.psi;
 nx = LS.nx;
@@ -15,6 +16,7 @@ landa_g_6,A1_g,nx_g,ny_g,...
 landanu=4+2*BQ;
 
 landa = zeros(numg,landanu);
+beta_save = beta;
 
 for i=1:numg
         Delta=sqrt(2)*dx;
@@ -39,7 +41,7 @@ for i=1:numg
 
         
 
-        %% find Virtual Points
+        %% find Virtual (mirror) Points
         X_ib_g = X_g(i) + nx_g(i)* Delta;
         X_e_g(i) = X_ib_g + nx_g(i)*Delta;
         
@@ -50,7 +52,16 @@ for i=1:numg
         I=find(x<X_e_g(i));
         J=find(y<Y_e_g(i));
 
-        
+%         xeg = X_e_g(i) 
+%         yeg = Y_e_g(i) 
+%         xg = X_g(i)
+%         yg = Y_g(i)
+%         Delta
+%         nxg = nx_g(i)
+%         nyg = ny_g(i)
+%         X_ib_g
+%         Y_ib_g
+%         i
         I=I(end);
         J=J(end);
 
@@ -131,9 +142,6 @@ for i=1:numg
         
        %%%%%%% so far we have found x1-x6
 
-        d = Delta;
-        B = (2*alpha+2*beta*r_g+beta*d^(-1)*r_g^2)/(2*alpha-beta*d);
-        E = (-alpha*Delta-beta*d*r_g+(alpha/d-beta)*r_g^2)/(2*alpha-beta*d);
         
         if BQ == 1
             
@@ -161,14 +169,32 @@ for i=1:numg
               1 x5 y5 x5*y5 x5^2 y5^2; 1 x6 y6 x6*y6 x6^2 y6^2];
 %         A1=A;  
             A = A^(-1);
-        
-        
+            d = Delta;
+            %% ==== check if phi_IB = 0 
+            if UVP == 1
+                phi_mSur = [phi(I1(i), J1(i)); phi(I2(i), J2(i)); ...
+                    phi(I3(i), J3(i)); phi(I4(i), J4(i)); phi(I5(i), J5(i));...
+                    phi(I6(i), J6(i))];
+                C = A * phi_mSur;
+                phi_m = C(1);
+                dphi_m = nx_g(i) * C(2) + ny_g(i) * C(3);
+                phi_IB = (q*d + 2*alpha*phi_m - alpha*d* dphi_m)/...
+                    (2*alpha-beta*d);
+
+                if phi_IB < treshold
+                    beta = 0;
+                end        
+            end
         
             b = A(1,:) + A(2,:)*x_m + A(3,:)*y_m + A(4,:)*x_m*y_m + ...
                 A(5,:)*x_m^2 + A(6,:)*y_m^2;
         
             e = nx_g(i) * ( A(2,:)+A(4,:)*y_m+2*A(5,:)*x_m ) + ...
                 ny_g(i) * ( A(3,:)+A(4,:)*x_m+2*A(6,:)*y_m );
+            
+            B = (2*alpha+2*beta*r_g+beta*d^(-1)*r_g^2)/(2*alpha-beta*d);
+            E = (-alpha*d-beta*d*r_g+(alpha/d-beta)*r_g^2)/(2*alpha-beta*d);
+
         
         
             A1_g(i) = 4*Delta*q/(-beta*Delta+2*alpha);
@@ -202,13 +228,43 @@ for i=1:numg
               1 x3 y3 x3*y3; 1 x4 y4 x4*y4];
 %         A1=A;  
             A = A^(-1);
-            
+            d = Delta;
+            %% ==== check if phi_IB = 0 
+
+            if UVP == 1
+                phi_mSur = [phi(I1(i),J1(i)); phi(I2(i),J2(i)); ...
+                    phi(I3(i),J3(i)); phi(I4(i),J4(i))];
+                C = A * phi_mSur;
+                X_m = [1; x_m; y_m; x_m*y_m];
+                phi_m = C' * X_m;
+                dphi_m = nx_g(i) * (C(2)+C(4)*y_m) + ny_g(i) * (C(3) + C(4)*x_m);
+                phi_IB = phi_m - dphi_m * Delta;
+                phiIB(i) = phi_IB;
+                
+%                 2*alpha*phi_m
+%                 alpha*d* dphi_m
+%                 2*alpha-beta*d
+%                 phi_IB = (q*d + 2*alpha*phi_m - alpha*d* dphi_m)/...
+%                     (2*alpha-beta*d);
+%                 phi_IB
+%                 if phi_IB < treshold
+%                     disp('Reached zero concentartion at the boundary, STOPPED the reaction')
+%                     beta = 0;
+%                     
+%                 end
+
+            end
             
             b = A(1,:) + A(2,:)*x_m + A(3,:)*y_m + A(4,:)*x_m*y_m ;
         
             e = nx_g(i) * ( A(2,:)+A(4,:)*y_m ) + ...
                 ny_g(i) * ( A(3,:)+A(4,:)*x_m );
         
+
+            B = (2*alpha+2*beta*r_g+beta*d^(-1)*r_g^2)/(2*alpha-beta*d);
+            E = (-alpha*d-beta*d*r_g+(alpha/d-beta)*r_g^2)/(2*alpha-beta*d);
+            beta = beta_save;
+
             
 
 %             A1_g(i) = 4*Delta*q/(-beta*Delta+2*alpha);
@@ -227,5 +283,8 @@ for i=1:numg
         I_e(i)=I;
         J_e(i)=J;
 end
-
-
+if UVP ==1 
+    message = strcat('max of phi_IB:  ', num2str(max(phiIB)), '  min of phi_IB:  '...
+        , num2str(min(phiIB)));
+    disp(message);
+end

@@ -1,4 +1,4 @@
-function [StateVar,VARIABLES,DOMAIN,BC,IBM,LS]=SetUpVariables
+function [StateVar,VARIABLES,DOMAIN,BC,IBM,LS]= setUpVariablesNonDim
 %% =========================== Domain size ================================
 
 diamcyl = 1;                  % Diameter of cylinders
@@ -8,10 +8,10 @@ nrgrainy = 1;
 
 S = 2*diamcyl;                % Space between centers of objects
 
-freeEast = 5*diamcyl;        %entrance length before cylinders
-freeWest = 3*diamcyl;      % exit length after
-freeNorth = 4*diamcyl;
-freeSouth = 4*diamcyl;
+freeEast = 2*diamcyl;        %exit length after cylinders
+freeWest = 2*diamcyl;      % entrance length after
+freeNorth = 0.75*diamcyl;
+freeSouth = 0.75*diamcyl;
 
 lx = freeWest + nrgrainx*diamcyl + (nrgrainx-1)*S + ...
     freeEast; % Length in x direction
@@ -26,12 +26,15 @@ ly = freeSouth + nrgrainy*diamcyl + (nrgrainy-1)*S + ...
 
 %% ======================== Additional variables ==========================
 
-Re = 1;
-uinflow =1;
-Pe = 20;
+Re = 0.24;
+uinflow = 1;
+Pe = 240;
 D = 1/Pe;
 phi_inlet = 1;
 phi_init = 1;
+density = 1;
+dimensional = 1;
+
 %% =============================== BCs ====================================
 
 %% velocities and flow
@@ -57,16 +60,22 @@ BC_n_v = 3;         %BC_n=1 ==> Dirichlet,   BC_n=3 ==> Neumann
 BC_s_v = 3;         %BC_s=1 ==> Dirichlet,   BC_s=3 ==> Neumann
 BC_e_v = 3;
 BC_w_v = 1;
-%% Transport 
 
+BC_n_p = 3;         %BC_n=1 ==> Dirichlet,   BC_n=3 ==> Neumann
+BC_s_p = 3;         %BC_s=1 ==> Dirichlet,   BC_s=3 ==> Neumann
+BC_e_p = 3;
+BC_w_p = 3;
+
+P0_e = 0;
+%% Transport
 % -alpha(dphi/dn_w)-beta phi=q
 q_phi = 0;
 alpha_phi = 1;
-beta_phi = 2;
+beta_phi = -178;        % beta is the Damkohler number
 BQp = 0;
 
-BC_e_phi=3;
-BC_w_phi=1;
+BC_e_phi=1;
+BC_w_phi=3;
 BC_n_phi=3;         %BC_n=1 ==> Dirichlet,   BC_n=3 ==> Neumann
 BC_s_phi=3;         %BC_s=1 ==> Dirichlet,   BC_s=3 ==> Neumann
 
@@ -95,16 +104,22 @@ end
 
 
 %% ======================== Coordinates ===================================
-uniform = 1;
-dvdxdy=20;
-A=4;
-expon=0;
-r=1.00941835135602;
-[DOMAIN]=Coordinates(xc,yc,lx,ly,A,diamcyl,dvdxdy,expon,r,uniform);
+Grid.r = 1.1;
+Grid.expon = 1;
+Grid.A = 6;
+Grid.dvdxdy = 180;
+Grid.uniform = 1;
+Grid.zoomedAreax = 1.5;
+Grid.zoomedAreay = 1.5;
+Grid.Lx_l = 1.5;
+Grid.Ly_b = 0.5;
+Grid.lengthUnit = 1;
 
+
+[DOMAIN]=Coordinates(lx,ly,diamcyl,Grid);
 %% ========================= Time Steps ===================================
 
-dt_man=0.001;                             %% Arbitrary time step
+dt_man=1e-7;                             %% Arbitrary time step
 dt_diff =  Re/((1/min(min(DOMAIN.dxu)))^2 + (1/min(min(DOMAIN.dyu)))^2); %% Diffisiun time step                  
 dt_cour = 1/sqrt(2*(uinflow^2)*...
     ((1/min(min(DOMAIN.dxu)))^2 + (1/min(min((DOMAIN.dyu)))^2))); % Courant time
@@ -155,30 +170,59 @@ U_d(:)=uinflow;
 
 % V(:,:)=0.1*uinflow;
 
-phi_a(1,:)=phi_inlet;
-phi(:,:)=phi_init;
-phi_old=phi;
 
 
 %% =================== initialize LS
-psi = zeros(imax+1,jmax+1);
-for i=1:imax+1
-    for j=1:jmax+1
-        d = sqrt( (DOMAIN.xp(i)-xc).^2 + (DOMAIN.yp(j)-yc).^2 )-diamcyl/2;
-        center = min(min(abs(d)));
-        [I,J,~] = find(abs(d) == center);
-        psi(i,j) = d(I(1),J(1));
-        
-    end
-end
+h = 4.5;
+
+LSCase.case = 1;  % 1 ==> circles obstacles, 2 ==> fracture
+LSCase.xc = xc;
+LSCase.yc = yc;
+LSCase.diamcyl = diamcyl;
+LSCase.h = h;
+
+
+psi = LSInitialize(DOMAIN, LSCase);
+
+% psi = zeros(imax+1,jmax+1);
+% for i=1:imax+1
+%     for j=1:jmax+1
+%         d = sqrt( (DOMAIN.xp(i)-xc).^2 + (DOMAIN.yp(j)-yc).^2 )-diamcyl/2;
+%         center = min(min(abs(d)));
+%         [I,J,~] = find(abs(d) == center);
+%         psi(i,j) = d(I(1),J(1));
+%         
+%     end
+% end
+psiU = interp2(DOMAIN.yp.*ones(imax+1,1), ones(jmax+1,1)'.*DOMAIN.xp', ...
+    psi ,DOMAIN.yu.*ones(imax,1), ones(jmax+1,1)'.*DOMAIN.xu');
+
+psiV = interp2(DOMAIN.yp.*ones(imax+1,1), ones(jmax+1,1)'.*DOMAIN.xp', ...
+    psi ,DOMAIN.yv.*ones(imax+1,1), ones(jmax,1)'.*DOMAIN.xv');
+
+U = double(psiU>0).*U;
+V = double(psiV>0).*V;
+
+%% initialize phi
+
+phi_a(1,:)=phi_inlet;
+phi(:,:)=phi_init;
+phi = double(psi>0).*phi;
+
+phi_old=phi;
+
+%% interface velocity parameters
+molarVol = 36.9;
+interfaceVelocityCoeff =  beta_phi / Pe;
+methodInterfaceVelocity = 1;    % chooses the denominator of the velocity, 1 for conditionally stable, 2 for stable
 
 
 %% LS solver variables
 
-fac = 1/4;    % dta factor 
+fac = 0.5;    % dta factor 
 dtau = fac*min(min(DOMAIN.dxp));  % psedue time step
 
-n_iter_ReLS = 20;
+n_iter_ReLS = 4;
 
 TimeSchemeLS = "RK3";
 TimeSchemeRLS = "RK3";
@@ -192,7 +236,9 @@ alpha_u=1;
 alpha_v=alpha_u;
 alpha_p=1;
 
-VARIABLES = struct('D',D,'Re',Re,...
+VARIABLES = struct('D',D,'Re',Re,'density', density,'molarVol',molarVol,...
+    'dimensional',dimensional,...
+    'intVelCoeff',interfaceVelocityCoeff,'intVelMethod',methodInterfaceVelocity,...
     'alpha_u',alpha_u,'alpha_v',alpha_v,...
     'alpha_p',alpha_p,'dt',dt,'dtVec',Dt,'Da',beta_phi,'Pe',Pe,...
     'n_iter_ReLS',n_iter_ReLS,'dtau',dtau,'TimeSchemeLS',TimeSchemeLS,...
@@ -205,7 +251,9 @@ BC = struct('U_a',U_a,'U_b',U_b,'U_c',U_c,'U_d',U_d,...
     'BC_e_u',BC_e_u,'BC_w_u',BC_w_u,'BC_n_u',BC_n_u,'BC_s_u',BC_s_u,...
     'BC_e_v',BC_e_v,'BC_w_v',BC_w_v,'BC_n_v',BC_n_v,'BC_s_v',BC_s_v,...
     'BC_e_phi',BC_e_phi,'BC_w_phi',BC_w_phi,'BC_n_phi',BC_n_phi,...
-    'BC_s_phi',BC_s_phi);
+    'BC_s_phi',BC_s_phi, ...
+    'BC_n_p', BC_n_p, 'BC_s_p',BC_s_p, 'BC_w_p',BC_w_p, 'BC_e_p',BC_e_p, ...
+    'P0_e', P0_e);
 
 IBM = struct('q',q,'alpha',alpha,'beta',beta,'q_phi',q_phi,'alpha_phi',...
     alpha_phi,'beta_phi',beta_phi,...
@@ -214,5 +262,22 @@ IBM = struct('q',q,'alpha',alpha,'beta',beta,'q_phi',q_phi,'alpha_phi',...
     'nrgrainy',nrgrainy,'BQu',BQu,'BQv',BQv,'BQp',BQp);
 
 StateVar = struct('U',U,'V',V,'P',P,'phi_old',phi_old);
+StateVar.P_cor_vec = zeros(1,(DOMAIN.imax-1)*(DOMAIN.jmax-1))';
 
 LS = struct('psi',psi);
+[LS] = LSnormals(LS,DOMAIN);
+
+StateVar.U_old = StateVar.U;
+StateVar.V_old = StateVar.V;
+StateVar.P_old = StateVar.P;
+
+% StateVar.U_star = StateVar.U;
+% StateVar.V_star = StateVar.V;
+% StateVar.U_star_old = StateVar.U_star;
+% StateVar.V_star_old = StateVar.V_star;
+        
+%% ==============================
+StateVar.phi = StateVar.phi_old;
+VARIABLES.LSband = 10*min(min(DOMAIN.dxp));
+VARIABLES.nLSupdate = 10;
+VARIABLES.dtLS = VARIABLES.nLSupdate * VARIABLES.dt;

@@ -9,7 +9,7 @@
 %%
 
 
-function [dir] = LSdirDerivates(DOMAIN,psi,u,v,equation)
+function [dir] = LSdirDerivates(DOMAIN,psi,u,v,equation, h)
 
 
 dx = min(min(DOMAIN.dxp));
@@ -33,7 +33,7 @@ dy = min(min(DOMAIN.dyp));
 if equation == "LevelSetEqn"
     for i=4:nx-3
         for j=2:ny-1
-            if abs(psi(i,j))<10*dx   %% 4 grid points near the interface
+            if abs(psi(i,j)) < h   %% 4 grid points near the interface
                 if u(i,j)>=0
                 % x-direction
                     vx1(i,j) = 1/dx*(psi(i-2,j)-psi(i-3,j)); % 

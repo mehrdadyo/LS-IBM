@@ -1,5 +1,5 @@
 function [StateVar] = SolveTransportADRE(ControlVar,DOMAIN,VARIABLES,... 
-    StateVar,IBM,IBM_coeffP,BC,Flux)
+    StateVar,IBM,IBM_coeffP,BC,Flux, LS)
 
 
         
@@ -29,7 +29,7 @@ function [StateVar] = SolveTransportADRE(ControlVar,DOMAIN,VARIABLES,...
                 ControlVar.tolbicg_c,ControlVar.maxit_c,...
                 Soln.L_phi,Soln.U_phi);
             [StateVar.phi_n] = FORMPHI(DOMAIN,phi_vec,BC,BC.phi_a,...
-                IBM_coeffP.flag_p,0);
+                IBM_coeffP.flag_p,0, LS);
             ControlVar.err_q=max(max(abs(StateVar.phi-StateVar.phi_n)));
             StateVar.phi=StateVar.phi_n;
         end
@@ -37,8 +37,30 @@ function [StateVar] = SolveTransportADRE(ControlVar,DOMAIN,VARIABLES,...
             num2str(ControlVar.time),'  Residual Quick  = ',...
             num2str(ControlVar.err_q)]);  
         
-        StateVar.phi_old = StateVar.phi;
+phi = StateVar.phi;  
+phi = (~IBM_coeffP.flag_p).* phi;
+
+% % get indices of all cells which are in fluids and have negative phi and
+% % larger than one phi
+% negIndx = phi<0 & IBM_coeffP.flag_p==0;
+% posIndx = phi>1 & IBM_coeffP.flag_p==0;
+% % get number of cells that are inside fluid and have positive phi and less
+% % than phi
+% insideVol = sum(sum((phi>0 & IBM_coeffP.flag_p==0 & phi<1)));
+% % get the sum of all the negative phis and larget than one phis
+% totNegflux = sum(sum(phi(negIndx))) + sum(sum(phi(posIndx)));
+% % % add the negative mass to the fluid cells
+% phi(phi>0 & IBM_coeffP.flag_p==0 & phi<=1) = ...
+%     phi(phi>0 & IBM_coeffP.flag_p==0 & phi<=1) + ...
+%     totNegflux/insideVol;
+% % reset the negative cells to zero and positives to one
+% phi(negIndx) = 0;
+% phi(posIndx) = 1;
+StateVar.phi = phi;  
+        
+%         StateVar.phi_old = StateVar.phi;
 %     if mod(i,savedat)==0
 %         name_flowfile=strcat('flowexpongrid',num2str(i),'.mat');
 %         save(name_flowfile,'-v7.3','U','V','P')
 %     end
+% negIndx = phi<0 & LS.psi>0;
