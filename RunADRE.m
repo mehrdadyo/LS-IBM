@@ -8,7 +8,7 @@ folder = fileparts(which(mfilename));
 % Add that folder plus all subfolders to the path.
 addpath(genpath(folder));
 
-[StateVar,VARIABLES,DOMAIN,BC,IBM,LS, LSCase]= setUpVariablesDim;
+[StateVar,VARIABLES,DOMAIN,BC,IBM,LS, LSCase]= setUpVariablesDim2;
 %% ==============================
 % load 'initial at any time '
 
