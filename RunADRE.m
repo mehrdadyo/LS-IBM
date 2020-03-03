@@ -8,7 +8,7 @@ folder = fileparts(which(mfilename));
 % Add that folder plus all subfolders to the path.
 addpath(genpath(folder));
 
-[StateVar,VARIABLES,DOMAIN,BC,IBM,LS, LSCase]= setUpVariablesDim2;
+[StateVar,VARIABLES,DOMAIN,BC,IBM,LS, LSCase]= setUpVariablesNonDim3;
 %% ==============================
 % load 'initial at any time '
 
@@ -25,19 +25,7 @@ ControlVar = setUpControlVar(VARIABLES, DOMAIN);
 
 [IBM_coeffU,IBM_coeffV,IBM_coeffP] = LSIBMcoeffs(IBM,DOMAIN,LS, StateVar.phi);
 
-% r= 0.5;
-% ang=0:0.01:2*pi;
-% xcir=r*cos(ang);
-% ycir=r*sin(ang);
-% xc = 3.5;
-% yc = 3.5;
-% r= IBM.diamcyl/2;
-% ang=0:0.01:2*pi;
-% 
-% xcir=r*cos(ang);
-% ycir=r*sin(ang);
-% xc = IBM.xc;
-% yc = IBM.yc;
+
 
 for iTime = 1:5
         
@@ -49,12 +37,12 @@ for iTime = 1:5
 %                      LEVEL SET EQUATION            
 %% ========================================================================
 
-%     if ~mod(iTime, VARIABLES.nLSupdate)
-% 
-%         [LS] = LSeqSolve(LS,StateVar,VARIABLES,DOMAIN);
-%         [IBM_coeffU,IBM_coeffV,IBM_coeffP] = LSIBMcoeffs(IBM,DOMAIN,LS, StateVar.phi);
-%         StateVar.phi = (~IBM_coeffP.flag_p).* StateVar.phi;
-%     end
+    if ~mod(iTime, VARIABLES.nLSupdate)
+
+        [LS] = LSeqSolve(LS,StateVar,VARIABLES,DOMAIN);
+        [IBM_coeffU,IBM_coeffV,IBM_coeffP] = LSIBMcoeffs(IBM,DOMAIN,LS, StateVar.phi);
+        StateVar.phi = (~IBM_coeffP.flag_p).* StateVar.phi;
+    end
     
 
 %% =======================================================================
