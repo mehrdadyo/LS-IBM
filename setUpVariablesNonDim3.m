@@ -1,7 +1,7 @@
-function [StateVar,VARIABLES,DOMAIN,BC,IBM,LS, LSCase]= setUpVariablesDim
+function [StateVar,VARIABLES,DOMAIN,BC,IBM,LS, LSCase]= setUpVariablesNonDim3
 %% =========================== Domain size ================================
 
-diamcyl = 1e-4;                  % Diameter of cylinders in cm
+diamcyl = 1e-2;                  % Diameter of cylinders in cm
 
 nrgrainx = 1;                 % Number of Cylinders in one row
 nrgrainy = 1;

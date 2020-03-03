@@ -1,4 +1,4 @@
-function [StateVar,VARIABLES,DOMAIN,BC,IBM,LS, LSCase]= setUpVariablesDim
+function [StateVar,VARIABLES,DOMAIN,BC,IBM,LS, LSCase]= setUpVariablesNonDim2
 %% =========================== Domain size ================================
 
 diamcyl = 1;                  % Diameter of cylinders
@@ -8,10 +8,10 @@ nrgrainy = 1;
 
 S = 2*diamcyl;                % Space between centers of objects
 
-freeEast = 499*diamcyl;        %exit length after cylinders
-freeWest = 499*diamcyl;      % entrance length after
-freeNorth = 95*diamcyl;
-freeSouth = 95*diamcyl;
+freeEast = 187*diamcyl;        %exit length after cylinders
+freeWest = 187*diamcyl;      % entrance length after
+freeNorth = 44.5*diamcyl;
+freeSouth = 44.5*diamcyl;
 
 lx = freeWest + nrgrainx*diamcyl + (nrgrainx-1)*S + ...
     freeEast; % Length in x direction
@@ -176,9 +176,9 @@ LSCase.h = h;
 %%
 %%% ======= rough fracture ===============
 xt = 0:min(min(DOMAIN.dxp))/10:DOMAIN.lx; % x-fracture
-b = 100;  % half fracture width
+b = 50;  % half fracture width
 lambda = 40;   % wave length
-a = 0.5 * lambda; % amplitude of the roughness 
+a = 0.2 * lambda; % amplitude of the roughness 
 x_0 = 0 *lambda; % phase displacement 
 %%%=========boundary generating function =====================
 fy = @(x, a, lambda, x_0)a*sin(2*pi/lambda * (x-x_0));

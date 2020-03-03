@@ -66,7 +66,7 @@ phi_inside = IBM.phi_inside_u;
 
 
 alpha_u = VARIABLES.alpha_u;
-
+density = VARIABLES.density;
         
 % CoEWu 
 % CoEWv
@@ -409,10 +409,10 @@ if BC_e_p == 1
     
     d_u(2:imax,2:jmax)=dyv(2:imax,1:jmax-1) ./...
         ( ap_u(2:imax,2:jmax)+ aw_u(2:imax,2:jmax)+ ae_u(2:imax,2:jmax)+...
-        as_u(2:imax,2:jmax) + an_u(2:imax,2:jmax) );
+        as_u(2:imax,2:jmax) + an_u(2:imax,2:jmax) )/density;
 
     d_u_sec(2:imax,2:jmax)=dyv(2:imax,1:jmax-1) ./...
-         ap_u(2:imax,2:jmax) ;    
+         ap_u(2:imax,2:jmax)/density ;    
 
 
        
@@ -430,10 +430,10 @@ else
     
     d_u(2:imax-1,2:jmax)=dyv(2:imax-1,1:jmax-1) ./...
         ( ap_u(2:imax-1,2:jmax)+ aw_u(2:imax-1,2:jmax)+ ae_u(2:imax-1,2:jmax)+...
-        as_u(2:imax-1,2:jmax) + an_u(2:imax-1,2:jmax) );
+        as_u(2:imax-1,2:jmax) + an_u(2:imax-1,2:jmax) )/density;
 
     d_u_sec(2:imax-1,2:jmax)=dyv(2:imax-1,1:jmax-1) ./...
-         ap_u(2:imax-1,2:jmax) ;    
+         ap_u(2:imax-1,2:jmax)/density ;    
 
 
 
@@ -452,7 +452,8 @@ end
 % S_u ==> Contribution from boundary conditions
 %==========================================================================
 S0(2:imax,2:jmax) = A0_p(2:imax,2:jmax) .*U_old(2:imax,2:jmax);
-S_Pres(2:imax,2:jmax) = ( P(2:imax,2:jmax)-P(3:imax+1,2:jmax) ) .*dyv(2:imax,1:jmax-1);
+S_Pres(2:imax,2:jmax) = ( P(2:imax,2:jmax)-P(3:imax+1,2:jmax) )...
+    .*dyv(2:imax,1:jmax-1)/density;
 S_ur(2:imax,2:jmax) = ap_u(2:imax,2:jmax)* coef.* U_star_old(2:imax,2:jmax);
 
 % ==== Boundary Condition Contribution

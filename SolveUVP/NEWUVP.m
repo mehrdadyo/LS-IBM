@@ -210,7 +210,7 @@ end
 P(2:imax,1)       = P(2:imax,2);     % Bottom (dp/dy=0)
 P(2:imax,jmax+1)  = P(2:imax,jmax);  % Top    (dp/dy=0)
 P(1,2:jmax)       = P(2,2:jmax);     % Left   (dp/dx=0)
-P(imax+1,2:jmax)  = -P(imax,2:jmax); % Right  (p=0)
+P(imax+1,2:jmax)  = P(imax,2:jmax); % Right  (p=0)
 return
 end
 % ==============================================================

@@ -39,7 +39,7 @@ ControlVar = setUpControlVar(VARIABLES, DOMAIN);
 % xc = IBM.xc;
 % yc = IBM.yc;
 
-for iTime = 1:2000
+for iTime = 1:5
         
     ControlVar.resi=1;
     ControlVar.ii=0;
@@ -49,12 +49,12 @@ for iTime = 1:2000
 %                      LEVEL SET EQUATION            
 %% ========================================================================
 
-    if ~mod(iTime, VARIABLES.nLSupdate)
-
-        [LS] = LSeqSolve(LS,StateVar,VARIABLES,DOMAIN);
-        [IBM_coeffU,IBM_coeffV,IBM_coeffP] = LSIBMcoeffs(IBM,DOMAIN,LS, StateVar.phi);
-        StateVar.phi = (~IBM_coeffP.flag_p).* StateVar.phi;
-    end
+%     if ~mod(iTime, VARIABLES.nLSupdate)
+% 
+%         [LS] = LSeqSolve(LS,StateVar,VARIABLES,DOMAIN);
+%         [IBM_coeffU,IBM_coeffV,IBM_coeffP] = LSIBMcoeffs(IBM,DOMAIN,LS, StateVar.phi);
+%         StateVar.phi = (~IBM_coeffP.flag_p).* StateVar.phi;
+%     end
     
 
 %% =======================================================================
