@@ -22,12 +22,15 @@ ControlVar = setUpControlVar(VARIABLES, DOMAIN);
 
 
 %% Level set at time t = dt
+dtLS = VARIABLES.dtLS;
+VARIABLES.dtLS = VARIABLES.dt;
 
+[LS] = LSeqSolve(LS,StateVar,VARIABLES,DOMAIN);
 [IBM_coeffU,IBM_coeffV,IBM_coeffP] = LSIBMcoeffs(IBM,DOMAIN,LS, StateVar.phi);
+VARIABLES.dtLS = dtLS;
 
 
-
-for iTime = 1:5
+for iTime = 1:2000
         
     ControlVar.resi=1;
     ControlVar.ii=0;

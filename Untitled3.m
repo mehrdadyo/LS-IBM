@@ -1,5 +1,5 @@
 figure(3)
-contourf(DOMAIN.Xp,DOMAIN.Yp,StateVar.phi.*(LS.psi>0), 50, 'LineStyle', 'none'); colormap jet
+contourf(DOMAIN.Xp,DOMAIN.Yp,IBM_coeffP.flag_p, 50, 'LineStyle', 'none'); colormap jet
 hold on
 plot(LSCase.BoundaryCurve.xt, LSCase.BoundaryCurve.yt+45, 'k')
 hold on

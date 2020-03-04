@@ -8,10 +8,10 @@ nrgrainy = 1;
 
 S = 2*diamcyl;                % Space between centers of objects
 
-freeEast = 499.5*diamcyl;        %exit length after cylinders
-freeWest = 499.5*diamcyl;      % entrance length after
-freeNorth = 95*diamcyl;
-freeSouth = 95*diamcyl;
+freeEast = 187*diamcyl;        %exit length after cylinders
+freeWest = 187*diamcyl;      % entrance length after
+freeNorth = 85*diamcyl;
+freeSouth = 85*diamcyl;
 
 lx = freeWest + nrgrainx*diamcyl + (nrgrainx-1)*S + ...
     freeEast; % Length in x direction

@@ -38,7 +38,7 @@ function [StateVar] = SolveTransportADRE(ControlVar,DOMAIN,VARIABLES,...
             num2str(ControlVar.err_q)]);  
         
 phi = StateVar.phi;  
-phi = (~IBM_coeffP.flag_p).* phi;
+% phi = (~IBM_coeffP.flag_p).* phi;
 
 % % get indices of all cells which are in fluids and have negative phi and
 % % larger than one phi
@@ -58,7 +58,7 @@ phi = (~IBM_coeffP.flag_p).* phi;
 % phi(posIndx) = 1;
 StateVar.phi = phi;  
         
-%         StateVar.phi_old = StateVar.phi;
+% StateVar.phi_old = StateVar.phi;
 %     if mod(i,savedat)==0
 %         name_flowfile=strcat('flowexpongrid',num2str(i),'.mat');
 %         save(name_flowfile,'-v7.3','U','V','P')
