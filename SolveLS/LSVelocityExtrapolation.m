@@ -72,7 +72,7 @@ for i=10:Nx-9
             [phi_x_pr] = biLinearInterpolation(x,y,phi,x_pr,y_pr);
             [phi_x_dpr] = biLinearInterpolation(x,y,phi,x_dpr,y_dpr);
             
-            u_I = -(Da/Pe)*(2*phi_x_pr-1/2*phi_x_dpr)/(3/2+Da*d);
+            u_I = (Da/Pe)*(2*phi_x_pr-1/2*phi_x_dpr)/(3/2+Da*d);
                 
 
             uI(i,j) = u_I*nx(i,j);

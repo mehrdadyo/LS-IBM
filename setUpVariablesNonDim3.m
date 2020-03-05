@@ -119,7 +119,7 @@ Grid.lengthUnit = diamcyl;
 [DOMAIN]=Coordinates(lx,ly,diamcyl,Grid);
 %% ========================= Time Steps ===================================
 
-dt_man=1e-4;                             %% Arbitrary time step
+dt_man=1e-6;                             %% Arbitrary time step
 dt_diff =  Re/((1/min(min(DOMAIN.dxu)))^2 + (1/min(min(DOMAIN.dyu)))^2); %% Diffisiun time step                  
 dt_cour = 1/sqrt(2*(uinflow^2)*...
     ((1/min(min(DOMAIN.dxu)))^2 + (1/min(min((DOMAIN.dyu)))^2))); % Courant time

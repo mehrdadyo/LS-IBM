@@ -58,7 +58,7 @@ phi = (~IBM_coeffP.flag_p).* phi;
 % phi(posIndx) = 1;
 StateVar.phi = phi;  
         
-%         StateVar.phi_old = StateVar.phi;
+StateVar.phi_old = StateVar.phi;
 %     if mod(i,savedat)==0
 %         name_flowfile=strcat('flowexpongrid',num2str(i),'.mat');
 %         save(name_flowfile,'-v7.3','U','V','P')

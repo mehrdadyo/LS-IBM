@@ -1,7 +1,8 @@
 function psi = solveHJEq(LS, VARIABLES, DOMAIN) 
 
+    VARIABLES.dtLS = VARIABLES.nLSupdate * VARIABLES.dt;
     dt = VARIABLES.dtLS;
-   
+
     u = LS.u;
     v = LS.v;
     psi_n = LS.psi;
