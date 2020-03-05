@@ -78,7 +78,6 @@ phi_inside = IBM.phi_inside_u;
 
 
 alpha_v = VARIABLES.alpha_v;
-density = VARIABLES.density;
 %% Define parameters
 
 
@@ -377,9 +376,9 @@ ap_v(2:imax,2:jmax-1)= (-( aw_v(2:imax,2:jmax-1) +ae_v(2:imax,2:jmax-1) ...
             
 d_v(2:imax,2:jmax-1)=dxu(1:imax-1,2:jmax-1) ./...
     ( ap_v(2:imax,2:jmax-1)+ aw_v(2:imax,2:jmax-1)+ ae_v(2:imax,2:jmax-1)+...
-    as_v(2:imax,2:jmax-1) + an_v(2:imax,2:jmax-1) )/density;
+    as_v(2:imax,2:jmax-1) + an_v(2:imax,2:jmax-1) );
 d_v_sec(2:imax,2:jmax-1)=dxu(1:imax-1,2:jmax-1) ./...
-    ( ap_v(2:imax,2:jmax-1) )/density;
+    ( ap_v(2:imax,2:jmax-1) );
 
 %% ============ Source Term Discretization ================================
 % This terms only evolve in time loop not the QUICK defered-correction loop
@@ -389,8 +388,7 @@ d_v_sec(2:imax,2:jmax-1)=dxu(1:imax-1,2:jmax-1) ./...
 % S_u ==> Contribution from boundary conditions
 %==========================================================================
 S0(2:imax,2:jmax-1) = A0_p(2:imax,2:jmax-1) .*V_old(2:imax,2:jmax-1);
-S_Pres(2:imax,2:jmax-1) = ( P(2:imax,2:jmax-1)-P(2:imax,3:jmax) )...
-    .*dxu(1:imax-1,2:jmax-1)/density;
+S_Pres(2:imax,2:jmax-1) = ( P(2:imax,2:jmax-1)-P(2:imax,3:jmax) ) .*dxu(1:imax-1,2:jmax-1);
 S_ur(2:imax,2:jmax-1) = ap_v(2:imax,2:jmax-1)* coef.* V_star_old(2:imax,2:jmax-1);
 
 % ==== Boundary Condition Contribution

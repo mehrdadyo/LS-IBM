@@ -8,10 +8,10 @@ nrgrainy = 1;
 
 S = 2*diamcyl;                % Space between centers of objects
 
-freeEast = 499.5*diamcyl;        %exit length after cylinders
-freeWest = 499.5*diamcyl;      % entrance length after
-freeNorth = 95*diamcyl;
-freeSouth = 95*diamcyl;
+freeEast = 187*diamcyl;        %exit length after cylinders
+freeWest = 187*diamcyl;      % entrance length after
+freeNorth = 69.5*diamcyl;
+freeSouth = 69.5*diamcyl;
 
 lx = freeWest + nrgrainx*diamcyl + (nrgrainx-1)*S + ...
     freeEast; % Length in x direction
@@ -28,13 +28,13 @@ ly = freeSouth + nrgrainy*diamcyl + (nrgrainy-1)*S + ...
 % - Re is in fact kinematic viscosity
 % - Pe is 1/(diffusion coeffcient)
 Re = 0.12;      % Re is the Kinematic viscosity in dimensional case
-uinflow = 0.12;
-Pe = 1e5;           
+uinflow = 1;
+Pe = 120;           
 D = 1/Pe;
-phi_inlet = 1e-5;
-phi_init = 1e-5;
+phi_inlet = 1;
+phi_init = 1;
 density = 1;
-dimensional = 1;
+dimensional = 0;
 %% =============================== BCs ====================================
 
 %% velocities and flow
@@ -71,8 +71,8 @@ P0_e = 0;
 % -alpha(dphi/dn_w)-beta phi=q
 
 q_phi = 0;
-alpha_phi = D;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ;
-beta_phi = 1000*10^(-4.05);     % beta is K in the reaction
+alpha_phi = 1;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ;
+beta_phi = 44.88;     % beta is K in the reaction
 BQp = 0;
 
 BC_e_phi=1;
@@ -109,7 +109,7 @@ Grid.r = 1.1;
 Grid.expon = 1;
 Grid.A = 2;
 Grid.dvdxdy = 2.5;
-Grid.uniform = 0.1;
+Grid.uniform = true;
 Grid.zoomedAreax = 1.5;
 Grid.zoomedAreay = 1.5;
 Grid.Lx_l = 1.5/50;
@@ -119,7 +119,7 @@ Grid.lengthUnit = diamcyl;
 [DOMAIN]=Coordinates(lx,ly,diamcyl,Grid);
 %% ========================= Time Steps ===================================
 
-dt_man=1e-9;                             %% Arbitrary time step
+dt_man=1e-4;                             %% Arbitrary time step
 dt_diff =  Re/((1/min(min(DOMAIN.dxu)))^2 + (1/min(min(DOMAIN.dyu)))^2); %% Diffisiun time step                  
 dt_cour = 1/sqrt(2*(uinflow^2)*...
     ((1/min(min(DOMAIN.dxu)))^2 + (1/min(min((DOMAIN.dyu)))^2))); % Courant time
@@ -176,8 +176,8 @@ LSCase.h = h;
 %%
 %%% ======= rough fracture ===============
 xt = 0:min(min(DOMAIN.dxp))/10:DOMAIN.lx; % x-fracture
-b = 0.01;  % half fracture width
-lambda = 0.0040;   % wave length
+b = 1;  % half fracture width
+lambda = 0.40;   % wave length
 a = 0.5 * lambda; % amplitude of the roughness 
 x_0 = 0 *lambda; % phase displacement 
 %%%=========boundary generating function =====================

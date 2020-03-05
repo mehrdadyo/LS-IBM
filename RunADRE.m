@@ -30,7 +30,7 @@ VARIABLES.dtLS = VARIABLES.dt;
 VARIABLES.dtLS = dtLS;
 
 
-for iTime = 1:2000
+for iTime = 1:41
         
     ControlVar.resi=1;
     ControlVar.ii=0;

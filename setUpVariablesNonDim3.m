@@ -10,8 +10,8 @@ S = 2*diamcyl;                % Space between centers of objects
 
 freeEast = 187*diamcyl;        %exit length after cylinders
 freeWest = 187*diamcyl;      % entrance length after
-freeNorth = 85*diamcyl;
-freeSouth = 85*diamcyl;
+freeNorth = 69.5*diamcyl;
+freeSouth = 69.5*diamcyl;
 
 lx = freeWest + nrgrainx*diamcyl + (nrgrainx-1)*S + ...
     freeEast; % Length in x direction
@@ -34,7 +34,7 @@ D = 1/Pe;
 phi_inlet = 1;
 phi_init = 1;
 density = 1;
-dimensional = 0;
+dimensional = 1;
 %% =============================== BCs ====================================
 
 %% velocities and flow
@@ -72,7 +72,7 @@ P0_e = 0;
 
 q_phi = 0;
 alpha_phi = 1;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ;
-beta_phi = 44.88;     % beta is K in the reaction
+beta_phi = -44.88;     % beta is K in the reaction
 BQp = 0;
 
 BC_e_phi=1;
@@ -109,7 +109,7 @@ Grid.r = 1.1;
 Grid.expon = 1;
 Grid.A = 2;
 Grid.dvdxdy = 2.5;
-Grid.uniform = 0.1;
+Grid.uniform = true;
 Grid.zoomedAreax = 1.5;
 Grid.zoomedAreay = 1.5;
 Grid.Lx_l = 1.5/50;
@@ -176,9 +176,9 @@ LSCase.h = h;
 %%
 %%% ======= rough fracture ===============
 xt = 0:min(min(DOMAIN.dxp))/10:DOMAIN.lx; % x-fracture
-b = 1;  % half fracture width
+b = 0.5;  % half fracture width
 lambda = 0.40;   % wave length
-a = 0.5 * lambda; % amplitude of the roughness 
+a = 0.2 * lambda; % amplitude of the roughness 
 x_0 = 0 *lambda; % phase displacement 
 %%%=========boundary generating function =====================
 fy = @(x, a, lambda, x_0)a*sin(2*pi/lambda * (x-x_0));
@@ -239,7 +239,7 @@ U_d(:)=uinflow;
 
 phi(:,:)=phi_init;
 phi = double(psi>0).*phi;
-phi_a(1,:) = (phi(1,:)~=0)*phi_inlet;
+phi_a(1,:) = phi(1,:)*phi_inlet;
 
 phi_old=phi;
 

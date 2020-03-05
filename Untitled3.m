@@ -1,9 +1,9 @@
 figure(3)
 contourf(DOMAIN.Xp,DOMAIN.Yp,IBM_coeffP.flag_p, 50, 'LineStyle', 'none'); colormap jet
 hold on
-plot(LSCase.BoundaryCurve.xt, LSCase.BoundaryCurve.yt+45, 'k')
+plot(LSCase.BoundaryCurve.xt, LSCase.BoundaryCurve.yt+0.7, 'k')
 hold on
-plot(LSCase.BoundaryCurve.xt, LSCase.BoundaryCurve.yb+45, 'k')
+plot(LSCase.BoundaryCurve.xt, LSCase.BoundaryCurve.yb+0.7, 'k')
 
 hold on
 scatter(DOMAIN.xp(IBM_coeffP.I1_p), DOMAIN.yp(IBM_coeffP.J1_p))
@@ -28,5 +28,9 @@ plot(LSCase.BoundaryCurve.xt,LSCase.BoundaryCurve.yb+DOMAIN.ly/2, 'k')
     StateVar.V_old = StateVar.V;
     StateVar.P_old = StateVar.P;
     
-contourf(DOMAIN.Xu,DOMAIN.Yu,StateVar.U,20, 'LineStyle', 'none'); colormap jet
+contourf(DOMAIN.Xp(11:end-10,:),DOMAIN.Yp(11:end-10,:),StateVar.phi(11:end-10,:),20, 'LineStyle', 'none'); colormap jet
+hold on
+plot(LSCase.BoundaryCurve.xt, LSCase.BoundaryCurve.yt+0.7, 'k')
+hold on
+plot(LSCase.BoundaryCurve.xt, LSCase.BoundaryCurve.yb+0.7, 'k')
     
