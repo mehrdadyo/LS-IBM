@@ -30,7 +30,7 @@ VARIABLES.nLSupdate = 1;
 
 VARIABLES.nLSupdate = nLSupdate;
 
-for iTime = 1:5000
+for iTime = 1:8000
         
     ControlVar.resi=1;
     ControlVar.ii=0;
@@ -96,15 +96,15 @@ for iTime = 1:5000
  
         save(matfile,'-v7.3','-struct','CurrentStateVar');
 
-
-
-
+    end
+    
+    if sum(sum(isnan(StateVar.U)))
+        break
     end
 
-    if iTime == 100
+    if iTime == 1000
         VARIABLES.dt = 10 * VARIABLES.dt;
-    elseif iTime == 199
-        VARIABLES.dt = 10 * VARIABLES.dt;
+
     end
 end
 

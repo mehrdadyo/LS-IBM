@@ -177,8 +177,8 @@ LSCase.h = h;
 %%% ======= rough fracture ===============
 xt = 0:min(min(DOMAIN.dxp))/10:DOMAIN.lx; % x-fracture
 b = 0.5;  % half fracture width
-lambda = 0.40;   % wave length
-a = 0.2 * lambda; % amplitude of the roughness 
+lambda = 0.10;   % wave length
+a = 1.2 * lambda; % amplitude of the roughness 
 x_0 = 0 *lambda; % phase displacement 
 %%%=========boundary generating function =====================
 fy = @(x, a, lambda, x_0)a*sin(2*pi/lambda * (x-x_0));
