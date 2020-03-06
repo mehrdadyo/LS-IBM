@@ -28,7 +28,7 @@ plot(LSCase.BoundaryCurve.xt,LSCase.BoundaryCurve.yb+DOMAIN.ly/2, 'k')
     StateVar.V_old = StateVar.V;
     StateVar.P_old = StateVar.P;
     
-contourf(DOMAIN.Xp(11:end-10,:),DOMAIN.Yp(11:end-10,:),(LS.psi(11:end-10,:)>0).*StateVar.phi(11:end-10,:),20, 'LineStyle', 'none'); colormap jet
+contourf(DOMAIN.Xp(11:end-10,:),DOMAIN.Yp(11:end-10,:),(psi(11:end-10,:)>0),20, 'LineStyle', 'none'); colormap jet
 
 % contourf(DOMAIN.Xp,DOMAIN.Yp,LS.psi,50, 'LineStyle', 'none'); colormap jet
 hold on
