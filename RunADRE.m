@@ -30,7 +30,7 @@ VARIABLES.nLSupdate = 1;
 
 VARIABLES.nLSupdate = nLSupdate;
 
-for iTime = 1:5000
+for iTime = 1:5990
         
     ControlVar.resi=1;
     ControlVar.ii=0;
@@ -103,8 +103,10 @@ for iTime = 1:5000
 
     if iTime == 100
         VARIABLES.dt = 10 * VARIABLES.dt;
-    elseif iTime == 199
+    elseif iTime == 190
         VARIABLES.dt = 10 * VARIABLES.dt;
+%     elseif iTime == 280
+%         VARIABLES.dt = 10 * VARIABLES.dt;
     end
 end
 
