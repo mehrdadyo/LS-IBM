@@ -12,9 +12,14 @@ imax = DOMAIN.imax;
 jmax = DOMAIN.jmax;
 %% Initialize Storage
 PCOR       = zeros(imax+1,jmax+1);
-PCORVEC1 = [PCORVEC ; 0];
+% PCORVEC1 = [PCORVEC ; 0];
+
+PCOR       = zeros(imax+1,jmax+1);
+J = ceil((jmax-1)/2);
+I = (J-2) * (DOMAIN.imax-1) + imax-1;
+PCORVEC1 = [PCORVEC(1:I-1,:) ; 0; PCORVEC(I:end,:)];
+
 %% Put solution for pressure into matrix form
-ind = 0;
 PCOR(2:imax,2:jmax) = reshape(PCORVEC1, [imax-1, jmax-1]);
 
 % for j = 2:jmax

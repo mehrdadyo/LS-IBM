@@ -1,4 +1,4 @@
-function [u,v] = LSVelocityExtrapolation(phi,Da,Pe,DOMAIN,LS)
+function [u,v] = LSVelocityExtrapolation(VARIABLES, StateVar, DOMAIN, LS)
 
 %% ===================
 % This function extrapolates the velocity from the interface to a banded
@@ -11,6 +11,11 @@ psi = LS.psi;
 nx = LS.nx;
 ny = LS.ny;
 
+phi = StateVar.phi;
+Da = VARIABLES.Da;
+Pe = VARIABLES.Pe;
+
+
 x = DOMAIN.xp;
 y = DOMAIN.yp;
 
@@ -22,7 +27,7 @@ dy = min(min(DOMAIN.dyp));
 
 epsi = 10*dx;
 % i_vel = 0;
-for i=2:Nx-1
+for i=10:Nx-9
     for j=2:Ny-1
         if abs(psi(i,j))<epsi   % grids within the narrow band
             
@@ -65,9 +70,13 @@ for i=2:Nx-1
             
 
             [phi_x_pr] = biLinearInterpolation(x,y,phi,x_pr,y_pr);
-            [phi_x_dpr] = biLinearInterpolation(x,y,phi,x_dpr,y_dpr);
-            
-            u_I = -(Da/Pe)*(2*phi_x_pr-1/2*phi_x_dpr)/(3/2+Da*d);
+            if i<Nx-9 && i>10
+                [phi_x_dpr] = biLinearInterpolation(x,y,phi,x_dpr,y_dpr);
+                u_I = (Da/Pe)*(2*phi_x_pr-1/2*phi_x_dpr)/(3/2+Da*d);
+            else
+                u_I = (Da/Pe)*(phi_x_pr)/(1+Da*d);
+            end
+                
                 
 
             uI(i,j) = u_I*nx(i,j);

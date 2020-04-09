@@ -1,7 +1,7 @@
 function [landa,landa_g_1,landa_g_2,landa_g_3,landa_g_4,A1_g,numg,flag,...
     I_g,J_g,I_solid,J_solid,I_e,J_e,I1,J1,I2,J2,I3,J3,I4,J4,...
-    landa_g_5,landa_g_6,I5,J5,I6,J6,nx,ny]=...
-                 LSPointIdent(DOMAIN,alpha,beta,q,BQ,LS,UVP)
+    landa_g_5,landa_g_6,I5,J5,I6,J6,nx,ny, message]=...
+                 LSPointIdent(DOMAIN,alpha,beta,q,BQ,LS,UVP, phi, treshold)
 
 % -alpha dphi - beta phi = q 
 %size of coordinate matrix n=size[x], m=size[y]
@@ -41,7 +41,13 @@ if UVP == -1  % u-velocity
 
     psi = zeros(length(DOMAIN.xu),length(DOMAIN.yu));
     psi(:,:) = ( PSI(1:end-1,:)+ PSI(2:end,:) )/2;
+    LStemp.psi = psi;
+    DOMAINtemp.dxp = DOMAIN.dxp;
+    DOMAINtemp.dyp = DOMAIN.dyp;
+    DOMAINtemp.imax = DOMAIN.imax - 1;
+    DOMAINtemp.jmax = DOMAIN.jmax;
 
+    LStemp = LSnormals(LStemp,DOMAINtemp);
     
     dx=min(min(DOMAIN.dxu));
     dy=min(min(DOMAIN.dyu));
@@ -57,11 +63,20 @@ elseif UVP == 0 % v-velocity
 %     psi = interp2(X',Y',PSI',Xq',Yq')';
     psi = zeros(length(DOMAIN.xv),length(DOMAIN.yv));
     psi(:,:) = ( PSI(:,1:end-1)+PSI(:,2:end) )/2;
+    LStemp.psi = psi;
+    DOMAINtemp.dxp = DOMAIN.dxp;
+    DOMAINtemp.dyp = DOMAIN.dyp;
+    DOMAINtemp.imax = DOMAIN.imax;
+    DOMAINtemp.jmax = DOMAIN.jmax - 1;
+
+    LStemp = LSnormals(LStemp,DOMAINtemp);
     
     dx=min(min(DOMAIN.dxv));
     dy=min(min(DOMAIN.dyv));
+
     
-    
+
+
 elseif UVP == 1 % scalar variables
     
     x = DOMAIN.xp;
@@ -71,13 +86,16 @@ elseif UVP == 1 % scalar variables
     
     dx=min(min(DOMAIN.dxp));
     dy=min(min(DOMAIN.dyp));
-    
+    LStemp = LS;
     
 end
 
 Nx = size(x,2);
 Ny = size(y,2);
-% flag for all points
+%% flag for all points
+% solid ==> flag = 2
+% fluid ==> flag = 0
+% ghost ==> flag = 1
 flag = zeros(Nx,Ny);
 
 %% solid points
@@ -107,9 +125,13 @@ NBabs (2:end-1,2:end-1) =  flag(3:end,2:end-1) + ...
 %     psi(2:end-1,3:end) + psi(2:end-1,1:end-2));
 
 % flag = flag - double(NBabs ~= absNB) .* double(flag == 2);
-flag (2:end-1,2:end-1) = flag (2:end-1,2:end-1)...
-    - double(NBabs (2:end-1,2:end-1) ~= 8) .* double(flag (2:end-1,2:end-1) == 2);
 
+% flag (2:end-1,2:end-1) = flag (2:end-1,2:end-1)...
+%     - double(NBabs (2:end-1,2:end-1) ~= 8) .* double(flag (2:end-1,2:end-1) == 2);
+
+flag (10:end-9,2:end-1) = flag (10:end-9,2:end-1)...
+    - double(NBabs (10:end-9,2:end-1) ~= 8) .* ...
+    double(flag (10:end-9,2:end-1) == 2);
 
 
 [I_g,J_g,~] = find(flag == 1);
@@ -124,8 +146,10 @@ Y_g = y(J_g);
 %% Virtual points
 
 [landa,landa_g_1,landa_g_2,landa_g_3,landa_g_4,A1_g,I_e,J_e,...
-    I1,J1,I2,J2,I3,J3,I4,J4,numg,landa_g_5,landa_g_6,I5,J5,I6,J6,nx,ny] = ...
-    LSmirPointsBQ(x,y,alpha,beta,q,X_g,Y_g,BQ,dx,dy,I_g,J_g,LS);
+    I1,J1,I2,J2,I3,J3,I4,J4,numg,landa_g_5,landa_g_6,I5,J5,I6,J6,nx,ny,...
+    message] = ...
+    LSmirPointsBQ(x,y,alpha,beta,q,X_g,Y_g,BQ,dx,dy,I_g,J_g,LStemp,...
+    UVP, phi, treshold);
 
 %% Solid Points indices
 [J_solid,I_solid] = find(flag' == 2);

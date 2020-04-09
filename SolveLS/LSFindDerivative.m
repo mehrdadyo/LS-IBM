@@ -11,11 +11,11 @@
 %%
 
 
-function [psinp] = LSFindDerivative(u,v,psi,DOMAIN,equation)
+function [psinp] = LSFindDerivative(u,v,psi,DOMAIN,equation, h)
 
 
 
-[dir] = LSdirDerivates(DOMAIN,psi,u,v,equation);
+[dir] = LSdirDerivates(DOMAIN,psi,u,v,equation, h);
 [weight] = LSWeights(dir,equation,eps);
 
 

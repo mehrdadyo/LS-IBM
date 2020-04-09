@@ -1,6 +1,5 @@
 function [landa,landa_g_1,landa_g_2,landa_g_3,landa_g_4,A1_g,I_e,J_e,...
-    I1,J1,I2,J2,I3,J3,I4,J4,numg,landa_g_5,landa_g_6,I5,J5,I6,J6,nx_g,...
-    ny_g, message] = ...
+    I1,J1,I2,J2,I3,J3,I4,J4,numg,landa_g_5,landa_g_6,I5,J5,I6,J6,nx_g,ny_g] = ...
     LSmirPointsBQ(x,y,alpha,beta,q,X_g,Y_g,BQ,dx,dy,I_g,J_g,LS,...
     UVP, phi, treshold)
 
@@ -45,8 +44,8 @@ for i=1:numg
         %% find Virtual (mirror) Points
         X_ib_g = X_g(i) + nx_g(i)* Delta;
         X_e_g(i) = X_ib_g + nx_g(i)*Delta;
-        X_g(i);
-        Y_g(i);
+        X_g(i)
+        X_g(i)
         
         Y_ib_g = Y_g(i) + ny_g(i)* Delta;
         Y_e_g(i) = Y_ib_g + ny_g(i)*Delta;
@@ -286,9 +285,8 @@ for i=1:numg
         I_e(i)=I;
         J_e(i)=J;
 end
-message = '';
 if UVP ==1 
     message = strcat('max of phi_IB:  ', num2str(max(phiIB)), '  min of phi_IB:  '...
         , num2str(min(phiIB)));
-%     disp(message);
+    disp(message);
 end

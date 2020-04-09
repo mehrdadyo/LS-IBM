@@ -33,4 +33,9 @@ elseif LSCase.case == 2  % fracture case
     psi = double( abs(d1) <= abs(d2) ).* d1 + ...
         double( abs(d2) < abs(d1) ).* d2;
     
+    
+elseif LSCase.case == 3  % rough fracture
+    psi = FractureInitialize(DOMAIN, LSCase.BoundaryCurve);
+end
+    
 end

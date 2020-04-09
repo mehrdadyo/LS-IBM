@@ -136,10 +136,10 @@ CM = sparse(AE_I,AE_J,AE,L,L)+sparse(AW_I,AW_J,AW,L,L)+...
   sparse(AP_I,AP_J,AP,L,L);
 
 CM2=CM;
-% J = ceil((jmax-1)/2);
-% I = (J-2) * (DOMAIN.imax-1) + imax-1;
-% CM2(I,:) = [];
-% CM2(:, I) = [];
-CM2(end,:) = [];
-CM2(:, end) = [];
+J = ceil((jmax-1)/2);
+I = (J-2) * (DOMAIN.imax-1) + imax-1;
+CM2(I,:) = [];
+CM2(:, I) = [];
+% CM2(end,:) = [];
+% CM2(:, end) = [];
 

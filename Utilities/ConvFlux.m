@@ -77,6 +77,9 @@ if flag==1          %CoEW=CoEWu  CoNS=CoNSu   dy=dyv   dx=dxv
     
     dF=Fe-Fw+Fn-Fs;
     A0_p=dV/dt;
+    if ControlVar.flow_steady 
+        A0_p = A0_p * 0;
+    end
     
     ConvF = struct('Fe_u',Fe,'Fw_u',Fw,'Fn_u',Fn,'Fs_u',Fs,'dF_u',dF,...
         'A0_p_u',A0_p,'alphae_u',alphae,'alphaw_u',alphaw,...
@@ -120,6 +123,10 @@ elseif flag==-1     %CoEW=CoEWv  CoNS=CoNSv   dy=dyu   dx=dxu
     
     dF=Fe-Fw+Fn-Fs;
     A0_p=dV/dt;
+    if ControlVar.flow_steady 
+        A0_p = A0_p * 0;
+    end
+    
     
     ConvF = struct('Fe_v',Fe,'Fw_v',Fw,'Fn_v',Fn,'Fs_v',Fs,'dF_v',dF,...
         'A0_p_v',A0_p,'alphae_v',alphae,'alphaw_v',alphaw,...
@@ -154,6 +161,10 @@ elseif flag==0       %dy=dyv          dx=dxu
     
     dF=Fe-Fw+Fn-Fs;
     A0_p=dV/dt;
+    
+    if ControlVar.transport_steady
+        A0_p = A0_p * 0;
+    end
     
     ConvF = struct('Fe_p',Fe,'Fw_p',Fw,'Fn_p',Fn,'Fs_p',Fs,'dF_p',dF,...
         'A0_p_p',A0_p,'alphae_p',alphae,'alphaw_p',alphaw,...

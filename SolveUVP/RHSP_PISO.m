@@ -92,4 +92,6 @@ RHSP=reshape(S0,[numel(S0),1]);
 % S0(dirich)=0;
 % RHSP2=RHSP(1:end-1,1);
 RHSP2=RHSP;
-RHSP2(end,:) = []; 
+J = ceil((jmax-1)/2);
+I = (J-2) * (DOMAIN.imax-1) + imax-1;
+RHSP2(I,:) = []; 
