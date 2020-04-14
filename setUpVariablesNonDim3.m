@@ -29,7 +29,7 @@ ly = freeSouth + nrgrainy*diamcyl + (nrgrainy-1)*S + ...
 % - Pe is 1/(diffusion coeffcient)
 Re = 0.1;      % Re is the Kinematic viscosity in dimensional case
 uinflow = 1;
-Pe = 120;           
+Pe = 12;           
 D = 1/Pe;
 phi_inlet = 1;
 phi_init = 0;
@@ -72,7 +72,7 @@ P0_e = 0;
 
 q_phi = 0;
 alpha_phi = 1;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ;
-beta_phi = -4.488;     % beta is K in the reaction
+beta_phi = -0.0244;     % beta is K in the reaction
 BQp = 0;
 
 BC_e_phi=1;
@@ -156,13 +156,6 @@ phi_b=zeros(1,jmax+1);
 phi_c=zeros(1,jmax+1);
 phi_d=zeros(1,jmax+1);
 
-%% ================= Initialization of matrix fields ======================
-
-
-
-
-
-
 %% =================== initialize LS
 
 LSCase.case = 3;  %1 ==> circles, 2 ==> flat fracture, 3 ==> rough fracture
@@ -178,7 +171,7 @@ LSCase.h = h;
 xt = 0:min(min(DOMAIN.dxp))/10:DOMAIN.lx; % x-fracture
 b = 0.5;  % half fracture width
 lambda = 0.4;%s0.10;   % wave length
-a = 0.2*lambda;%1.2 * lambda; % amplitude of the roughness 
+a = 0*lambda;%1.2 * lambda; % amplitude of the roughness 
 x_0 = 0 *lambda; % phase displacement 
 %%%=========boundary generating function =====================
 fy = @(x, a, lambda, x_0)a*sin(2*pi/lambda * (x-x_0));
@@ -263,10 +256,10 @@ TimeSchemeRLS = "RK3";
 
 %% ========================== Time integration ============================
 
-alpha_u=0.65;
+alpha_u=0.7;
 alpha_v=alpha_u;
 alpha_p=1;
-alpha_q = 0.65;
+alpha_q = 1;
 VARIABLES = struct('D',D,'Re',Re,'density', density,'molarVol',molarVol,...
     'dimensional',dimensional,...
     'intVelCoeff',interfaceVelocityCoeff,'intVelMethod',methodInterfaceVelocity,...
@@ -312,5 +305,6 @@ StateVar.phi = StateVar.phi_old;
 VARIABLES.LSband = 10*min(min(DOMAIN.dxp));
 VARIABLES.nLSupdate = 10;
 VARIABLES.dtLS = VARIABLES.nLSupdate * VARIABLES.dt;
-
+VARIABLES.LSgamma = 6 * min(min(DOMAIN.dxp));
+VARIABLES.LSbeta = 3 * min(min(DOMAIN.dxp));
 end
