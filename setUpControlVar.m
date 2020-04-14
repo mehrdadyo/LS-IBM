@@ -19,9 +19,9 @@ ControlVar.flow_steady = 0;
 
 ControlVar.transport_steady = 0;
 
-ControlVar.model = 3;
+ControlVar.model = 4;
 
-ControlVar.noLStime = 300;
+ControlVar.noLStime = 120;
 
 ControlVar.tol_q=5e-4;
 ControlVar.tolbicg_c=5e-5;
