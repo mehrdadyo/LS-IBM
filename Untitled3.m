@@ -30,14 +30,14 @@ plot(LSCase.BoundaryCurve.xt,LSCase.BoundaryCurve.yb+DOMAIN.ly/2, 'k')
     
 contourf(DOMAIN.Xp(11:end-10,:),DOMAIN.Yp(11:end-10,:),(psi(11:end-10,:)>0).*phi(11:end-10,:),20, 'LineStyle', 'none'); colormap jet
 
-figure(2);contourf(DOMAIN.Xp,DOMAIN.Yp,phi.*(psi>0),50, 'LineStyle', 'none'); colormap jet
+figure(2);contourf(DOMAIN.Xp ,DOMAIN.Yp,phi.*(psi>0),50, 'LineStyle', 'none'); colormap jet
 % contourf(DOMAIN.Xp,DOMAIN.Yp,LS.psi,50, 'LineStyle', 'none'); colormap jet
 hold on
-plot(LSCase.BoundaryCurve.xt, LSCase.BoundaryCurve.yt+0.7, 'k')
+plot(LSCase.BoundaryCurve.xt, LSCase.BoundaryCurve.yt+0.7,'w','LineWidth', 0.5)
 hold on
-plot(LSCase.BoundaryCurve.xt, LSCase.BoundaryCurve.yb+0.7, 'k')
+plot(LSCase.BoundaryCurve.xt, LSCase.BoundaryCurve.yb+0.7,'w','LineWidth', 0.5)
 axis equal
-xlim([DOMAIN.xp(11), DOMAIN.xp(end-10)])   
+xlim([DOMAIN.xp(25), DOMAIN.xp(end-10)])   
 
 dyb = diff(LSCase.BoundaryCurve.yb);
 dx = diff(LSCase.BoundaryCurve.xt);
