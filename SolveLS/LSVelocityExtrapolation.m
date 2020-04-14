@@ -10,11 +10,12 @@ psi = LS.psi;
 
 nx = LS.nx;
 ny = LS.ny;
+gamma = VARIABLES.LSgamma;
+beta = VARIABLES.LSbeta;
 
 phi = StateVar.phi;
 Da = VARIABLES.Da;
 Pe = VARIABLES.Pe;
-
 
 x = DOMAIN.xp;
 y = DOMAIN.yp;
@@ -25,11 +26,11 @@ dy = min(min(DOMAIN.dyp));
 [Nx,Ny] = size(psi);
 [uI,vI] = deal(zeros(Nx,Ny));
 
-epsi = 10*dx;
+% epsi = 10*dx;
 % i_vel = 0;
 for i=10:Nx-9
     for j=2:Ny-1
-        if abs(psi(i,j))<epsi   % grids within the narrow band
+        if abs(psi(i,j))< gamma   % grids within the narrow band
             
             if psi(i,j) >= 0
                             
@@ -72,13 +73,17 @@ for i=10:Nx-9
             [phi_x_pr] = biLinearInterpolation(x,y,phi,x_pr,y_pr);
             if i<Nx-9 && i>10
                 [phi_x_dpr] = biLinearInterpolation(x,y,phi,x_dpr,y_dpr);
-                u_I = (Da/Pe)*(2*phi_x_pr-1/2*phi_x_dpr)/(3/2+Da*d);
+                u_I = -(Da/Pe)*(2*phi_x_pr-1/2*phi_x_dpr)/(3/2+Da*d);
             else
-                u_I = (Da/Pe)*(phi_x_pr)/(1+Da*d);
+                u_I = -(Da/Pe)*(phi_x_pr)/(1+Da*d);
             end
-                
-                
-
+            coeff = ((abs(psi(i,j)) - gamma)^2 ...
+            *(2*abs(psi(i,j)) + gamma - 3 * beta))/(gamma - beta)^3;    
+            c = (abs(psi(i,j))<= beta) + ...
+                (abs(psi(i,j))<= gamma) * (abs(psi(i,j))> beta) * coeff +...
+                (1 - (abs(psi(i,j))<= gamma));
+%             c = 1;    
+            u_I = c * u_I;
             uI(i,j) = u_I*nx(i,j);
             vI(i,j) = u_I*ny(i,j);
             
@@ -93,7 +98,10 @@ end
 
 u = uI;
 v = vI;
-
+maxTravelU = max(max(abs(u)))*VARIABLES.dt;
+maxTravelV = max(max(abs(v)))*VARIABLES.dt;
+disp(['maxTravelU = ', num2str(maxTravelU),'     ','maxTravelV = ', ...
+    num2str(maxTravelV)])
 %% Staggered velocity
 % u = 0.5*( uI(1:end-1,:)+uI(2:end,:) );
 % v = 0.5*( vI(:,1:end-1)+vI(:,2:end) );

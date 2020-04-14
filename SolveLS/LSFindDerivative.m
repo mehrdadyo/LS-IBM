@@ -1,3 +1,4 @@
+function [psinp] = LSFindDerivative(u,v,psi,DOMAIN,equation, h, phi_o)
 %% =======================
 % This function finds the negative or positive direction derivative 
 % WENO 5th order. 
@@ -11,11 +12,9 @@
 %%
 
 
-function [psinp] = LSFindDerivative(u,v,psi,DOMAIN,equation, h)
 
-
-
-[dir] = LSdirDerivates(DOMAIN,psi,u,v,equation, h);
+[dir] = LSdirDerivates(DOMAIN,psi,u,v,equation, h, phi_o);
+eps = 1e-6;
 [weight] = LSWeights(dir,equation,eps);
 
 

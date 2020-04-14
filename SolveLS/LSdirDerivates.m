@@ -1,3 +1,5 @@
+function [dir] = LSdirDerivates(DOMAIN,psi,u,v,equation, h, psi_o)
+
 %% =======================
 % This function finds the first order derivatives in 5 point stencil
 % The inputs are:
@@ -7,10 +9,6 @@
 
 
 %%
-
-
-function [dir] = LSdirDerivates(DOMAIN,psi,u,v,equation, h)
-
 
 dx = min(min(DOMAIN.dxp));
 dy = min(min(DOMAIN.dyp));
@@ -31,9 +29,10 @@ dy = min(min(DOMAIN.dyp));
 
 % tic;
 if equation == "LevelSetEqn"
+    psi_tube = psi_o;
     for i=4:nx-3
         for j=2:ny-1
-            if abs(psi(i,j)) < h   %% 4 grid points near the interface
+            if abs(psi_tube(i,j)) < h   %% 4 grid points near the interface
                 if u(i,j)>=0
                 % x-direction
                     vx1(i,j) = 1/dx*(psi(i-2,j)-psi(i-3,j)); % 
@@ -41,7 +40,7 @@ if equation == "LevelSetEqn"
                     vx3(i,j) = 1/dx*(psi(i,j)-psi(i-1,j));
                     vx4(i,j) = 1/dx*(psi(i+1,j)-psi(i,j));
                     vx5(i,j) = 1/dx*(psi(i+2,j)-psi(i+1,j));
-                elseif u(i,j)<0
+                elseif u(i,j)<0      %% psi_x -
                     vx1(i,j) = 1/dx*(psi(i+3,j)-psi(i+2,j)); % 
                     vx2(i,j) = 1/dx*(psi(i+2,j)-psi(i+1,j));
                     vx3(i,j) = 1/dx*(psi(i+1,j)-psi(i,j));
@@ -54,7 +53,7 @@ if equation == "LevelSetEqn"
     end
     for i=2:nx-1
         for j=4:ny-3
-            if abs(psi(i,j))<10*dx   %% 4 grid points near the interface
+            if abs(psi_tube(i,j)) < h   %% 4 grid points near the interface
                 
                 % y-direction
                 if v(i,j)>=0
@@ -87,9 +86,13 @@ if equation == "LevelSetEqn"
     dir.vy4 = vy4;
     dir.vy5 = vy5;
 elseif equation == "ReinitializationEqn"
+    psi_tube = psi_o;
     for i=4:nx-3
         for j=2:ny-1
-            if abs(psi(i,j))<10*dx   %% 4 grid points near the interface
+            N0 = min(abs([psi_tube(i,j), psi_tube(i+1,j), psi_tube(i-1,j) ...
+                psi_tube(i,j-1), psi_tube(i+1,j-1), psi_tube(i-1,j-1), ...
+                psi_tube(i,j+1), psi_tube(i+1,j+1), psi_tube(i-1,j+1)]));
+            if abs(N0) < h   %% 4 grid points near the interface
                 
                 % x-direction
 
@@ -115,7 +118,10 @@ elseif equation == "ReinitializationEqn"
     
     for i=2:nx-1
         for j=4:ny-3
-            if abs(psi(i,j))<10*dx   %% 4 grid points near the interface
+            N0 = min(abs([psi_tube(i,j), psi_tube(i+1,j), psi_tube(i-1,j) ...
+                psi_tube(i,j-1), psi_tube(i+1,j-1), psi_tube(i-1,j-1), ...
+                psi_tube(i,j+1), psi_tube(i+1,j+1), psi_tube(i-1,j+1)]));
+            if abs(N0) < h   %% 4 grid points near the interface
                 
 
                 
