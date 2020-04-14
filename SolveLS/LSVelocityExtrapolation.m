@@ -13,6 +13,9 @@ ny = LS.ny;
 gamma = VARIABLES.LSgamma;
 beta = VARIABLES.LSbeta;
 
+dissolution = VARIABLES.dissolution;
+
+
 phi = StateVar.phi;
 Da = VARIABLES.Da;
 Pe = VARIABLES.Pe;
@@ -28,6 +31,11 @@ dy = min(min(DOMAIN.dyp));
 
 % epsi = 10*dx;
 % i_vel = 0;
+direc = -1;
+if dissolution
+	direc = 1;
+end
+
 for i=10:Nx-9
     for j=2:Ny-1
         if abs(psi(i,j))< gamma   % grids within the narrow band
@@ -73,9 +81,9 @@ for i=10:Nx-9
             [phi_x_pr] = biLinearInterpolation(x,y,phi,x_pr,y_pr);
             if i<Nx-9 && i>10
                 [phi_x_dpr] = biLinearInterpolation(x,y,phi,x_dpr,y_dpr);
-                u_I = -(Da/Pe)*(2*phi_x_pr-1/2*phi_x_dpr)/(3/2+Da*d);
+                u_I = direc *(Da/Pe)*(2*phi_x_pr-1/2*phi_x_dpr)/(3/2+Da*d);
             else
-                u_I = -(Da/Pe)*(phi_x_pr)/(1+Da*d);
+                u_I = direc*(Da/Pe)*(phi_x_pr)/(1+Da*d);
             end
             coeff = ((abs(psi(i,j)) - gamma)^2 ...
             *(2*abs(psi(i,j)) + gamma - 3 * beta))/(gamma - beta)^3;    
