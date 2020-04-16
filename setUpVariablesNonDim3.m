@@ -157,9 +157,10 @@ phi_b=zeros(1,jmax+1);
 phi_c=zeros(1,jmax+1);
 phi_d=zeros(1,jmax+1);
 
-%% =================== initialize LS
+%% =================== LS parameters
 
-LSCase.case = 3;  %1 ==> circles, 2 ==> flat fracture, 3 ==> rough fracture
+LSCase.case = 3;  %1 ==> circles, 2 ==> flat fracture,
+% 3 ==> uni-mineral rough fracture, 4 ==>  bi-mineral rough fracture
 %%% ======= cylinder ===============
 LSCase.xc = xc;
 LSCase.yc = yc;
@@ -168,35 +169,51 @@ LSCase.diamcyl = diamcyl;
 h = 4.5;
 LSCase.h = h;
 %%
+
 %%% ======= rough fracture ===============
-xt = 0:min(min(DOMAIN.dxp))/10:DOMAIN.lx; % x-fracture
 b = 0.5;  % half fracture width
 lambda = 0.4;%s0.10;   % wave length
-a = 0*lambda;%1.2 * lambda; % amplitude of the roughness 
+a = 0.2*lambda;%1.2 * lambda; % amplitude of the roughness 
 x_0 = 0 *lambda; % phase displacement 
 %%%=========boundary generating function =====================
 fy = @(x, a, lambda, x_0)a*sin(2*pi/lambda * (x-x_0));
-LSCase.BoundaryCurve.yt = b/2 + fy(xt, a, lambda, x_0);
-LSCase.BoundaryCurve.yb = -b/2 - fy(xt, a, lambda, x_0);
-%%%============================================================
 
-%%
-LSCase.BoundaryCurve.a = a;
-LSCase.BoundaryCurve.lambda = lambda;
-LSCase.BoundaryCurve.b = b;
-LSCase.BoundaryCurve.x_0 = x_0;
-LSCase.BoundaryCurve.xt = xt;
+%%%========= uni mineral fracture case
+refine = 10;
+LSCase.BoundaryCurve = uniMineralroughFracture(DOMAIN, ...
+    b, fy, lambda, a, x_0, refine);
 
-LSCase.BoundaryCurve.boundfunctionTop = ...
-    @(x, a, lambda, x_0, b) b/2 + a*sin(2*pi/lambda * (x-x_0));
-LSCase.BoundaryCurve.bFunctionBottom = ...
-    @(x, a, lambda, x_0, b) -b/2 - a*sin(2*pi/lambda * (x-x_0));
+%%%============= biMineral fracture case
+refine_x = 5;
+refine_y = 5;
 
-LSCase.BoundaryCurve.endBotIndx = ceil(length(DOMAIN.yp)/2);
+% the start and end of top and bottom for mineral 1
+xt_s = [0 0.8 1.5 2.5];
+xt_e = [0.5 1.2 2 4];
 
+xb_s = [0 2 3.5];
+xb_e = [0.8 3 4]; 
 
+[LSCase.BoundaryCurve1] = boundaryCurve(DOMAIN, fy, b, lambda, a, x_0,...
+    refine_x, refine_y, xt_s, xt_e, xb_s, xb_e);
+
+% the start and end of top and bottom for mineral 1
+xt_s = [0 0.8 1.5 2.5];
+xt_e = [0.5 1.2 2 4];
+
+xb_s = [0 2 3.5];
+xb_e = [0.8 3 4]; 
+
+[LSCase.BoundaryCurve1] = boundaryCurve(DOMAIN, fy, b, lambda, a, x_0,...
+    refine_x, refine_y, xt_s, xt_e, xb_s, xb_e);
+Boundary2.xt_s = [0.5 1.2 2];
+Boundary2.xt_e = [0.8 1.5 2.5];
+
+Boundary2.xb_s = [0.8 3];
+Boundary2.xb_e = [2 3.5];
+%% Initialize level set 
 psi = LSInitialize(DOMAIN, LSCase);
-
+%%
 % psi = zeros(imax+1,jmax+1);
 % for i=1:imax+1
 %     for j=1:jmax+1
