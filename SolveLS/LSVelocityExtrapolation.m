@@ -1,4 +1,4 @@
-function [u,v] = LSVelocityExtrapolation(VARIABLES, StateVar, DOMAIN, LS)
+function [LS] = LSVelocityExtrapolation(VARIABLES, StateVar, DOMAIN, LS)
 
 %% ===================
 % This function extrapolates the velocity from the interface to a banded
@@ -17,6 +17,7 @@ dissolution = VARIABLES.dissolution;
 
 
 phi = StateVar.phi;
+
 Da = VARIABLES.Da;
 Pe = VARIABLES.Pe;
 
@@ -104,10 +105,10 @@ end
 
 % set the velocity at x equal to V and calculate the face velocities
 
-u = uI;
-v = vI;
-maxTravelU = max(max(abs(u)))*VARIABLES.dt;
-maxTravelV = max(max(abs(v)))*VARIABLES.dt;
+LS.u = uI;
+LS.v = vI;
+maxTravelU = max(max(abs(LS.u)))*VARIABLES.dt;
+maxTravelV = max(max(abs(LS.v)))*VARIABLES.dt;
 disp(['maxTravelU = ', num2str(maxTravelU),'     ','maxTravelV = ', ...
     num2str(maxTravelV)])
 %% Staggered velocity

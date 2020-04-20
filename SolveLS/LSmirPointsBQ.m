@@ -2,7 +2,7 @@ function [landa,landa_g_1,landa_g_2,landa_g_3,landa_g_4,A1_g,I_e,J_e,...
     I1,J1,I2,J2,I3,J3,I4,J4,numg,landa_g_5,landa_g_6,I5,J5,I6,J6,nx_g,...
     ny_g, message] = ...
     LSmirPointsBQ(x,y,alpha,beta,q,X_g,Y_g,BQ,dx,dy,I_g,J_g,LS,...
-    UVP, phi, treshold)
+    UVP, phi, treshold, flag_s2)
 
 psi = LS.psi;
 nx = LS.nx;
@@ -45,9 +45,7 @@ for i=1:numg
         %% find Virtual (mirror) Points
         X_ib_g = X_g(i) + nx_g(i)* Delta;
         X_e_g(i) = X_ib_g + nx_g(i)*Delta;
-        X_g(i);
-        Y_g(i);
-        
+
         Y_ib_g = Y_g(i) + ny_g(i)* Delta;
         Y_e_g(i) = Y_ib_g + ny_g(i)*Delta;
         
@@ -262,16 +260,33 @@ for i=1:numg
         
             e = nx_g(i) * ( A(2,:)+A(4,:)*y_m ) + ...
                 ny_g(i) * ( A(3,:)+A(4,:)*x_m );
-        
-
-            B = (2*alpha+2*beta*r_g+beta*d^(-1)*r_g^2)/(2*alpha-beta*d);
-            E = (-alpha*d-beta*d*r_g+(alpha/d-beta)*r_g^2)/(2*alpha-beta*d);
+            
+            alpha_use = alpha;
+            beta_use = beta;
+            q_use = q;
+            
+            if isfield(alpha, 'alpha_phi1')
+                if flag_s2(I_g(i),J_g(i))
+                    alpha_use = alpha.alpha_phi2;
+                    beta_use = beta.beta_phi2;
+                    q_use = q.q_phi2;
+                else
+                    alpha_use = alpha.alpha_phi1;
+                    beta_use = beta.beta_phi1;
+                    q_use = q.q_phi1;
+                end
+            end
+                
+            B = (2*alpha_use+2*beta_use*r_g+beta_use*d^(-1)*r_g^2)...
+                /(2*alpha_use-beta_use*d);
+            E = (-alpha_use*d-beta_use*d*r_g+(alpha_use/d-beta_use)*r_g^2)...
+                /(2*alpha_use-beta_use*d);
             beta = beta_save;
 
             
 
 %             A1_g(i) = 4*Delta*q/(-beta*Delta+2*alpha);
-            A1_g(i) = q*(d+2*r_g+d^(-1)*r_g^2)/(2*alpha-beta*d);
+            A1_g(i) = q_use*(d+2*r_g+d^(-1)*r_g^2)/(2*alpha_use-beta_use*d);
             landa(i,:) = B*b+E*e;
         
             landa_g_1(i) = landa(i,1);

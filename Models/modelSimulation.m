@@ -37,6 +37,7 @@ while ControlVar.time < ControlVar.endTime
 %                      LEVEL SET EQUATION            
 %% ========================================================================
 %     LS_temp = LS;        
+
     [LS] = LSeqSolve(LS,StateVar,VARIABLES,DOMAIN);
     [IBM_coeffU,IBM_coeffV,IBM_coeffP] = ...
         LSIBMcoeffs(IBM,DOMAIN,LS, StateVar.phi);

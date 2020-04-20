@@ -38,7 +38,9 @@ elseif LSCase.case == 3  % Simple rough fracture
     psi = simpleFractureInitialize(DOMAIN, LSCase.BoundaryCurve);
     
 elseif LSCase.case == 4  % bi-mineral rough fracture
-
+    psi = [];
+    psi.psi1 = biMineralFractureInitialize(DOMAIN, LSCase.BoundaryCurve1);
+    psi.psi2 = biMineralFractureInitialize(DOMAIN, LSCase.BoundaryCurve2);
 end
     
 end

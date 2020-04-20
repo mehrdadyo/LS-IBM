@@ -19,8 +19,10 @@ for i =2:imax
             nx(i,j) = (psi(i+1,j)-psi(i-1,j))/(2*dx);
             ny(i,j) = (psi(i,j+1)-psi(i,j-1))/(2*dy);
             grad = sqrt(nx(i,j)^2 + ny(i,j)^2);
-            nx(i,j) = nx(i,j)/grad;
-            ny(i,j) = ny(i,j)/grad;
+            if (grad > 1e-15)
+                nx(i,j) = nx(i,j)/grad;
+                ny(i,j) = ny(i,j)/grad;
+            end
 
             
             
