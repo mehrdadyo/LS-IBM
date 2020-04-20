@@ -94,11 +94,15 @@ while ControlVar.time < ControlVar.endTime
 %% ========================================================================
 %                       CurrentStateVar            
 %  ========================================================================     
-    
-    CurrentStateVar =  struct('U',StateVar.U,'V',StateVar.V,...
-            'P',StateVar.P,'phi',StateVar.phi, 'psi', LS.psi, 'time', ...
-            ControlVar.time);
-    
+    if isfield(LS, 'LS1')
+        CurrentStateVar =  struct('U',StateVar.U,'V',StateVar.V,...
+        'P',StateVar.P,'phi',StateVar.phi, 'psi1', LS.LS1.psi, ...
+        'psi2', LS.LS2.psi, 'time', ControlVar.time);
+    else
+        CurrentStateVar =  struct('U',StateVar.U,'V',StateVar.V,...
+                'P',StateVar.P,'phi',StateVar.phi, 'psi', LS.psi, 'time', ...
+                ControlVar.time);
+    end
   
     
 %% ========================================================================
