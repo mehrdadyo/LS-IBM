@@ -106,7 +106,7 @@ ycent = freeSouth+diamcyl/2:2+diamcyl:ly-freeNorth-diamcyl/2;
 %     xc(i)=entlength+(i-1)*S;
 % end
 phi_inside_u=0;                           % concen inside of objects
-phi_inside_phi=q_phi;
+phi_inside_phi=0;
 [xc,yc] =deal(zeros(nrgrainx,nrgrainy));
 for i=1:nrgrainx
     for j=1:nrgrainy
