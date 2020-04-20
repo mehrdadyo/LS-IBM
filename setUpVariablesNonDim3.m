@@ -32,7 +32,7 @@ uinflow = 1;
 Pe = 12;           
 D = 1/Pe;
 phi_inlet = 1;
-phi_init = 0;
+phi_init = 1;
 density = 1;
 dimensional = 1;
 %% =============================== BCs ====================================
@@ -69,12 +69,26 @@ BC_w_p = 3;
 P0_e = 0;
 %% Transport
 % -alpha(dphi/dn_w)-beta phi=q
-
-q_phi = 0;
-alpha_phi = 1;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ;
-beta_phi = -0.0244;     % beta is K in the reaction
+uniMineral = false;
 BQp = 0;
-dissolution = true;
+
+if uniMineral 
+    q_phi = 0;
+    alpha_phi = 1;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ;
+    beta_phi = -0.244;     % beta is K in the reaction
+    dissolution = true;
+else
+    q_phi.q_phi1 = 0;
+    alpha_phi.alpha_phi1 = 1;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ;
+    beta_phi.beta_phi1 = 0;     % beta is K in the reaction
+    dissolution.dissolution1 = true;  
+
+    q_phi.q_phi2 = 0;
+    alpha_phi.alpha_phi2 = 1;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ;
+    beta_phi.beta_phi2 = -0.488;     % beta is K in the reaction
+    dissolution.dissolution2 = true;  
+end
+    
 
 BC_e_phi=1;
 BC_w_phi=3;
@@ -159,7 +173,7 @@ phi_d=zeros(1,jmax+1);
 
 %% =================== LS parameters
 
-LSCase.case = 3;  %1 ==> circles, 2 ==> flat fracture,
+LSCase.case = 4;  %1 ==> circles, 2 ==> flat fracture,
 % 3 ==> uni-mineral rough fracture, 4 ==>  bi-mineral rough fracture
 %%% ======= cylinder ===============
 LSCase.xc = xc;
@@ -173,62 +187,61 @@ LSCase.h = h;
 %%% ======= rough fracture ===============
 b = 0.5;  % half fracture width
 lambda = 0.4;%s0.10;   % wave length
-a = 0.2*lambda;%1.2 * lambda; % amplitude of the roughness 
+a = 0*lambda;%1.2 * lambda; % amplitude of the roughness 
 x_0 = 0 *lambda; % phase displacement 
 %%%=========boundary generating function =====================
 fy = @(x, a, lambda, x_0)a*sin(2*pi/lambda * (x-x_0));
 
 %%%========= uni mineral fracture case
-refine = 10;
-LSCase.BoundaryCurve = uniMineralroughFracture(DOMAIN, ...
-    b, fy, lambda, a, x_0, refine);
+if LSCase.case == 3
+    refine = 10;
+    LSCase.BoundaryCurve = uniMineralBoundaryCurve(DOMAIN, ...
+        b, fy, lambda, a, x_0, refine);
+end
 
 %%%============= biMineral fracture case
-refine_x = 5;
-refine_y = 5;
+if LSCase.case == 4
+    refine_x = 5;
+    refine_y = 5;
 
-% the start and end of top and bottom for mineral 1
-xt_s = [0 0.8 1.5 2.5];
-xt_e = [0.5 1.2 2 4];
+    % the start and end of top and bottom for mineral 1
+    xt_s = [0 0.8 1.5 2.5];
+    xt_e = [0.5 1.2 2 4];
 
-xb_s = [0 2 3.5];
-xb_e = [0.8 3 4]; 
+    xb_s = [0 2 3.5];
+    xb_e = [0.8 3 4]; 
 
-[LSCase.BoundaryCurve1] = boundaryCurve(DOMAIN, fy, b, lambda, a, x_0,...
-    refine_x, refine_y, xt_s, xt_e, xb_s, xb_e);
+    [LSCase.BoundaryCurve1] = biMineralBoundaryCurve(DOMAIN, fy, b, ...
+        lambda, a, x_0, refine_x, refine_y, xt_s, xt_e, xb_s, xb_e);
 
-% the start and end of top and bottom for mineral 1
-xt_s = [0 0.8 1.5 2.5];
-xt_e = [0.5 1.2 2 4];
+    % the start and end of top and bottom for mineral 1
+    xt_s = [0.5 1.2 2];
+    xt_e = [0.8 1.5 2.5];
 
-xb_s = [0 2 3.5];
-xb_e = [0.8 3 4]; 
+    xb_s = [0.8 3];
+    xb_e = [2 3.5];
 
-[LSCase.BoundaryCurve1] = boundaryCurve(DOMAIN, fy, b, lambda, a, x_0,...
-    refine_x, refine_y, xt_s, xt_e, xb_s, xb_e);
-Boundary2.xt_s = [0.5 1.2 2];
-Boundary2.xt_e = [0.8 1.5 2.5];
+    [LSCase.BoundaryCurve2] = biMineralBoundaryCurve(DOMAIN, fy, b, ...
+        lambda, a, x_0, refine_x, refine_y, xt_s, xt_e, xb_s, xb_e);
 
-Boundary2.xb_s = [0.8 3];
-Boundary2.xb_e = [2 3.5];
+end
+
 %% Initialize level set 
 psi = LSInitialize(DOMAIN, LSCase);
 %%
-% psi = zeros(imax+1,jmax+1);
-% for i=1:imax+1
-%     for j=1:jmax+1
-%         d = sqrt( (DOMAIN.xp(i)-xc).^2 + (DOMAIN.yp(j)-yc).^2 )-diamcyl/2;
-%         center = min(min(abs(d)));
-%         [I,J,~] = find(abs(d) == center);
-%         psi(i,j) = d(I(1),J(1));
-%         
-%     end
-% end
+
+psi_f = psi;
+if LSCase.case == 4
+    psi_f = min(psi.psi1, psi.psi2);
+    psi_f_sign = (psi.psi1>0).*(psi.psi2>0);
+    psi_f = psi_f.*psi_f_sign;
+end
+    
 psiU = interp2(DOMAIN.yp.*ones(imax+1,1), ones(jmax+1,1)'.*DOMAIN.xp', ...
-    psi ,DOMAIN.yu.*ones(imax,1), ones(jmax+1,1)'.*DOMAIN.xu');
+    psi_f ,DOMAIN.yu.*ones(imax,1), ones(jmax+1,1)'.*DOMAIN.xu');
 
 psiV = interp2(DOMAIN.yp.*ones(imax+1,1), ones(jmax+1,1)'.*DOMAIN.xp', ...
-    psi ,DOMAIN.yv.*ones(imax+1,1), ones(jmax,1)'.*DOMAIN.xv');
+    psi_f ,DOMAIN.yv.*ones(imax+1,1), ones(jmax,1)'.*DOMAIN.xv');
 
 
 %% initialize U, V, phi
@@ -249,16 +262,32 @@ U_d(:)=uinflow;
 
 
 phi(:,:)=phi_init;
-phi = double(psi>0).*phi;
-phi_a(1,:) = ones(size(phi(1,:)))*phi_inlet.*(psi(1,:)>0);
+phi = double(psi_f_sign).*phi;
+phi_a(1,:) = ones(size(phi(1,:)))*phi_inlet.*(psi_f_sign(1,:));
 phi(1,:) = phi_a;
 phi_old=phi;
 
 
 %% interface velocity parameters
-molarVol = 36.9;
-interfaceVelocityCoeff = beta_phi * molarVol/D;
-methodInterfaceVelocity = 2;    % chooses the denominator of the velocity, 1 for conditionally stable, 2 for stable
+methodInterfaceVelocity = 2;    % chooses the denominator of the 
+
+if LSCase.case ~= 4
+    molarVol = 36.9;
+    interfaceVelocityCoeff = beta_phi * molarVol/D;
+    %                   velocity, 1 for conditionally stable, 2 for stable
+    Da = beta_phi;
+else 
+    molarVol.molarVol1 = 36.9;
+    molarVol.molarVol2 = 36.9;
+
+    interfaceVelocityCoeff.interfaceVelocityCoeff1 = ...
+        beta_phi.beta_phi1 * molarVol.molarVol1/D;
+     interfaceVelocityCoeff.interfaceVelocityCoeff2 = ...
+        beta_phi.beta_phi2 * molarVol.molarVol2/D;   
+    
+    Da.Da1 = beta_phi.beta_phi1;
+    Da.Da2 = beta_phi.beta_phi2;
+end
 %% LS solver variables
 
 fac = 0.5;    % dta factor 
@@ -282,7 +311,7 @@ VARIABLES = struct('D',D,'Re',Re,'density', density,'molarVol',molarVol,...
     'dimensional',dimensional,...
     'intVelCoeff',interfaceVelocityCoeff,'intVelMethod',methodInterfaceVelocity,...
     'alpha_u',alpha_u,'alpha_v',alpha_v,'alpha_p',alpha_p,'alpha_q',alpha_q,...
-    'dt',dt,'dtVec',Dt,'Da',beta_phi,'Pe',Pe,...
+    'dt',dt,'dtVec',Dt,'Da',Da,'Pe',Pe,...
     'n_iter_ReLS',n_iter_ReLS,'dtau',dtau,'TimeSchemeLS',TimeSchemeLS,...
     'TimeSchemeRLS',TimeSchemeRLS, 'dissolution', dissolution);
 
@@ -305,9 +334,16 @@ IBM = struct('q',q,'alpha',alpha,'beta',beta,'q_phi',q_phi,'alpha_phi',...
 
 StateVar = struct('U',U,'V',V,'P',P,'phi_old',phi_old);
 StateVar.P_cor_vec = zeros(1,(DOMAIN.imax-1)*(DOMAIN.jmax-1))';
+if LSCase.case == 4
+    LS.LS1 = struct('psi',psi.psi1);
+    [LS.LS1] = LSnormals(LS.LS1,DOMAIN);
+    
+    LS.LS2 = struct('psi',psi.psi2);
+    [LS.LS2] = LSnormals(LS.LS2,DOMAIN);    
+else 
+    [LS] = LSnormals(LS,DOMAIN);    
 
-LS = struct('psi',psi);
-[LS] = LSnormals(LS,DOMAIN);
+end
 
 StateVar.U_old = StateVar.U;
 StateVar.V_old = StateVar.V;
