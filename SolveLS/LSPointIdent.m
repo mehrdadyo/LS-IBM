@@ -39,7 +39,7 @@ if UVP == -1  % u-velocity
     Xq = DOMAIN.Xu;
     Yq = DOMAIN.Yu;
     
-%     psi = interp2(X',Y',PSI',Xq',Yq')';  
+%     psi1 = interp2(X',Y',PSI1',Xq',Yq')';  
 
 
     
@@ -47,27 +47,34 @@ if UVP == -1  % u-velocity
     DOMAINtemp.dyp = DOMAIN.dyp;
     DOMAINtemp.imax = DOMAIN.imax - 1;
     DOMAINtemp.jmax = DOMAIN.jmax;
-    if isfield(LS,'LS1')
-        psi1 = zeros(length(DOMAIN.xu),length(DOMAIN.yu));
-        psi2 = zeros(length(DOMAIN.xu),length(DOMAIN.yu));
-        
-        psi1(:,:) = ( PSI1(1:end-1,:)+ PSI1(2:end,:) )/2;
-        psi2(:,:) = ( PSI2(1:end-1,:)+ PSI2(2:end,:) )/2;
-        
-        LS1temp.psi = psi1;
-        LS2temp.psi = psi2;
-        
-        LS1temp = LSnormals(LS1temp,DOMAINtemp);
-        LS2temp = LSnormals(LS2temp,DOMAINtemp);
-        
-        psi = min(LS1temp.psi, LS2temp.psi);
+    if isfield(LS,'LS1') %%%%%%%%%% there are some irregular positive points when interolated
+        PSI = min(PSI1, PSI2);
+        psi = zeros(length(DOMAIN.xu),length(DOMAIN.yu));
+        psi(:,:) = ( PSI(1:end-1,:)+ PSI(2:end,:) )/2;
         
         LStemp.psi = psi;
+        LStemp = LSnormals(LStemp,DOMAINtemp);
         
-        LStemp.nx = LS1temp.nx.*(LS1temp.psi == psi) + ...
-            LS2temp.nx.*(LS2temp.psi == psi).*(LS1temp.psi ~= psi);
-        LStemp.ny = LS1temp.ny.*(LS1temp.psi == psi) + ...
-            LS2temp.ny.*(LS2temp.psi == psi).*(LS1temp.psi ~= psi);        
+%         psi1 = zeros(length(DOMAIN.xu),length(DOMAIN.yu));
+        psi2 = zeros(length(DOMAIN.xu),length(DOMAIN.yu));
+%         
+%         psi1(:,:) = ( PSI1(1:end-1,:)+ PSI1(2:end,:) )/2;
+        psi2(:,:) = ( PSI2(1:end-1,:)+ PSI2(2:end,:) )/2;
+%         
+%         LS1temp.psi = psi1;
+%         LS2temp.psi = psi2;
+%         
+%         LS1temp = LSnormals(LS1temp,DOMAINtemp);
+%         LS2temp = LSnormals(LS2temp,DOMAINtemp);
+%         
+%         psi = min(LS1temp.psi, LS2temp.psi);
+%         
+%         LStemp.psi = psi;
+%         
+%         LStemp.nx = LS1temp.nx.*(LS1temp.psi == psi) + ...
+%             LS2temp.nx.*(LS2temp.psi == psi).*(LS1temp.psi ~= psi);
+%         LStemp.ny = LS1temp.ny.*(LS1temp.psi == psi) + ...
+%             LS2temp.ny.*(LS2temp.psi == psi).*(LS1temp.psi ~= psi);        
     else
         psi = zeros(length(DOMAIN.xu),length(DOMAIN.yu));
         psi(:,:) = ( PSI(1:end-1,:)+ PSI(2:end,:) )/2;
@@ -99,26 +106,32 @@ elseif UVP == 0 % v-velocity
     DOMAINtemp.jmax = DOMAIN.jmax - 1;
 
     if isfield(LS,'LS1')
-        psi1 = zeros(length(DOMAIN.xv),length(DOMAIN.yv));
-        psi2 = zeros(length(DOMAIN.xv),length(DOMAIN.yv));
-        
-        psi1(:,:) = ( PSI1(:,1:end-1)+PSI1(:,2:end) )/2;
-        psi2(:,:) = ( PSI2(:,1:end-1)+PSI2(:,2:end) )/2;
-        
-        LS1temp.psi = psi1;
-        LS2temp.psi = psi2;
-        
-        LS1temp = LSnormals(LS1temp,DOMAINtemp);
-        LS2temp = LSnormals(LS2temp,DOMAINtemp);
-        
-        psi = min(LS1temp.psi, LS2temp.psi);
+        PSI = min(PSI1, PSI2);
+        psi = zeros(length(DOMAIN.xv),length(DOMAIN.yv));
+        psi(:,:) = ( PSI(:,1:end-1)+PSI(:,2:end) )/2;
         
         LStemp.psi = psi;
-        
-        LStemp.nx = LS1temp.nx.*(LS1temp.psi == psi) + ...
-            LS2temp.nx.*(LS2temp.psi == psi).*(LS1temp.psi ~= psi);
-        LStemp.ny = LS1temp.ny.*(LS1temp.psi == psi) + ...
-            LS2temp.ny.*(LS2temp.psi == psi).*(LS1temp.psi ~= psi);        
+        LStemp = LSnormals(LStemp,DOMAINtemp);
+%         psi1 = zeros(length(DOMAIN.xv),length(DOMAIN.yv));
+        psi2 = zeros(length(DOMAIN.xv),length(DOMAIN.yv));
+%         
+%         psi1(:,:) = ( PSI1(:,1:end-1)+PSI1(:,2:end) )/2;
+        psi2(:,:) = ( PSI2(:,1:end-1)+PSI2(:,2:end) )/2;
+%         
+%         LS1temp.psi = psi1;
+%         LS2temp.psi = psi2;
+%         
+%         LS1temp = LSnormals(LS1temp,DOMAINtemp);
+%         LS2temp = LSnormals(LS2temp,DOMAINtemp);
+%         
+%         psi = min(LS1temp.psi, LS2temp.psi);
+%         
+%         LStemp.psi = psi;
+%         
+%         LStemp.nx = LS1temp.nx.*(LS1temp.psi == psi) + ...
+%             LS2temp.nx.*(LS2temp.psi == psi).*(LS1temp.psi ~= psi);
+%         LStemp.ny = LS1temp.ny.*(LS1temp.psi == psi) + ...
+%             LS2temp.ny.*(LS2temp.psi == psi).*(LS1temp.psi ~= psi);        
     else
         psi = zeros(length(DOMAIN.xv),length(DOMAIN.yv));
         psi(:,:) = ( PSI(:,1:end-1)+PSI(:,2:end) )/2;
@@ -137,22 +150,38 @@ elseif UVP == 0 % v-velocity
 
 
 elseif UVP == 1 % scalar variables
+    x = DOMAIN.xp;
+    y = DOMAIN.yp;
+
+
+
+    
+    DOMAINtemp.dxp = DOMAIN.dxp;
+    DOMAINtemp.dyp = DOMAIN.dyp;
+    DOMAINtemp.imax = DOMAIN.imax;
+    DOMAINtemp.jmax = DOMAIN.jmax;
+    
     if isfield(LS,'LS1')
 
-        
-
-        
-        LS1temp = LS.LS1;
-        LS2temp = LS.LS2;
-        
-        psi = min(LS1temp.psi, LS2temp.psi);
+        psi = min(PSI1, PSI2);
         
         LStemp.psi = psi;
+        LStemp = LSnormals(LStemp,DOMAINtemp);
+
+        psi2 = PSI2;
+
         
-        LStemp.nx = LS1temp.nx.*(LS1temp.psi == psi) + ...
-            LS2temp.nx.*(LS2temp.psi == psi).*(LS1temp.psi ~= psi);
-        LStemp.ny = LS1temp.ny.*(LS1temp.psi == psi) + ...
-            LS2temp.ny.*(LS2temp.psi == psi).*(LS1temp.psi ~= psi);        
+%         LS1temp = LS.LS1;
+%         LS2temp = LS.LS2;
+%         
+%         psi = min(LS1temp.psi, LS2temp.psi);
+%         
+%         LStemp.psi = psi;
+%         
+%         LStemp.nx = LS1temp.nx.*(LS1temp.psi == psi) + ...
+%             LS2temp.nx.*(LS2temp.psi == psi).*(LS1temp.psi ~= psi);
+%         LStemp.ny = LS1temp.ny.*(LS1temp.psi == psi) + ...
+%             LS2temp.ny.*(LS2temp.psi == psi).*(LS1temp.psi ~= psi);        
     else
 
         psi = PSI;
@@ -222,7 +251,7 @@ Y_g = y(J_g);
 
 flag_s2 = zeros(Nx,Ny);
 if isfield(LS,'LS1')
-   flag_s2 = double(LS2temp.psi<0) + flag_s2; 
+   flag_s2 = double(psi2<0) + flag_s2; 
    flag_s2 = (flag == 1).*flag_s2;
 end
 
