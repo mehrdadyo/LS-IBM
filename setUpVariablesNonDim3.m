@@ -69,7 +69,7 @@ BC_w_p = 3;
 P0_e = 0;
 %% Transport
 % -alpha(dphi/dn_w)-beta phi=q
-uniMineral = false;
+uniMineral = true;
 BQp = 0;
 
 if uniMineral 
@@ -173,7 +173,7 @@ phi_d=zeros(1,jmax+1);
 
 %% =================== LS parameters
 
-LSCase.case = 4;  %1 ==> circles, 2 ==> flat fracture,
+LSCase.case = 3;  %1 ==> circles, 2 ==> flat fracture,
 % 3 ==> uni-mineral rough fracture, 4 ==>  bi-mineral rough fracture
 %%% ======= cylinder ===============
 LSCase.xc = xc;
@@ -260,13 +260,21 @@ U_d(:)=uinflow;
 
 
 
+if LSCase.case ~= 4
 
-phi(:,:)=phi_init;
-phi = double(psi_f_sign).*phi;
-phi_a(1,:) = ones(size(phi(1,:)))*phi_inlet.*(psi_f_sign(1,:));
-phi(1,:) = phi_a;
-phi_old=phi;
-
+    phi(:,:)=phi_init;
+    phi = double(psi>0).*phi;
+    phi_a(1,:) = ones(size(phi(1,:)))*phi_inlet.*(psi(1,:)>0);
+    phi(1,:) = phi_a;
+    phi_old=phi;
+    LS.psi = psi;
+else
+    phi(:,:)=phi_init;
+    phi = double(psi_f_sign).*phi;
+    phi_a(1,:) = ones(size(phi(1,:)))*phi_inlet.*(psi_f_sign(1,:));
+    phi(1,:) = phi_a;
+    phi_old=phi;
+end
 
 %% interface velocity parameters
 methodInterfaceVelocity = 2;    % chooses the denominator of the 
