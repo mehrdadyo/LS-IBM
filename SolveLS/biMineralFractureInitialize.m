@@ -56,6 +56,6 @@ for i =1:length(DOMAIN.xp)
     
     psi(i,endBotIndx+1:end) = -min(dist) .* signNeg + ...
          min(dist) .* (1 - signNeg) ; 
-
+        
 end
 
