@@ -118,5 +118,8 @@ while ControlVar.time < ControlVar.endTime
 
     end
     
+    if sum(sum(isnan(StateVar.U))) || max(max(StateVar.phi))>1e4
+        break
+    end
 
 end
