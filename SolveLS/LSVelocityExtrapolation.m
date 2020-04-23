@@ -28,7 +28,7 @@ else
     psi = LS.psi;
     nx = LS.nx;
     ny = LS.ny;
-    
+    Da = VARIABLES.Da;
     direc = -1;
     if dissolution
         direc = 1;
