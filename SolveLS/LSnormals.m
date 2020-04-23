@@ -23,8 +23,16 @@ for i =2:imax
                 nx(i,j) = nx(i,j)/grad;
                 ny(i,j) = ny(i,j)/grad;
             end
-
             
+%             if abs(nx(i,j))<1e-10
+%                 nx(i,j) = 0;
+%                 ny(i,j) = 1;
+%             end
+% 
+%             if abs(ny(i,j))<1e-10
+%                 ny(i,j) = 0;
+%                 nx(i,j) = 1;
+%             end
             
         end
 
