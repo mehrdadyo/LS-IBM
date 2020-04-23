@@ -9,8 +9,8 @@ function [landa,landa_g_1,landa_g_2,landa_g_3,landa_g_4,A1_g,numg,flag,...
 
 
 
-if isfield(LS, 'LS1')
-    PSI1 = LS.LS1.psi;
+if isfield(LS, 'LS_s')
+    PSI = LS.LS_s.psi;
     PSI2 = LS.LS2.psi;
 else 
     PSI = LS.psi;
@@ -48,7 +48,6 @@ if UVP == -1  % u-velocity
     DOMAINtemp.imax = DOMAIN.imax - 1;
     DOMAINtemp.jmax = DOMAIN.jmax;
     if isfield(LS,'LS1') %%%%%%%%%% there are some irregular positive points when interolated
-        PSI = min(PSI1, PSI2);
         psi = zeros(length(DOMAIN.xu),length(DOMAIN.yu));
         psi(:,:) = ( PSI(1:end-1,:)+ PSI(2:end,:) )/2;
         
@@ -106,7 +105,6 @@ elseif UVP == 0 % v-velocity
     DOMAINtemp.jmax = DOMAIN.jmax - 1;
 
     if isfield(LS,'LS1')
-        PSI = min(PSI1, PSI2);
         psi = zeros(length(DOMAIN.xv),length(DOMAIN.yv));
         psi(:,:) = ( PSI(:,1:end-1)+PSI(:,2:end) )/2;
         
@@ -163,8 +161,7 @@ elseif UVP == 1 % scalar variables
     
     if isfield(LS,'LS1')
 
-        psi = min(PSI1, PSI2);
-        
+        psi = PSI;
         LStemp.psi = psi;
         LStemp = LSnormals(LStemp,DOMAINtemp);
 

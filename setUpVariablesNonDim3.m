@@ -85,7 +85,7 @@ else
 
     q_phi.q_phi2 = 0;
     alpha_phi.alpha_phi2 = 1;
-    beta_phi.beta_phi2 = -0.244;     % beta is K in the reaction
+    beta_phi.beta_phi2 = 0;     % beta is K in the reaction
     dissolution.dissolution2 = true;  
 end
     

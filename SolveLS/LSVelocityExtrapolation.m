@@ -6,20 +6,48 @@ function [LS] = LSVelocityExtrapolation(VARIABLES, StateVar, DOMAIN, LS)
 % interface based on the level set equation.
 
 %% finding the velocity
-psi = LS.psi;
+dissolution = VARIABLES.dissolution;
+Pe = VARIABLES.Pe;
 
-nx = LS.nx;
-ny = LS.ny;
+if isfield(LS, 'LS1')
+    psi = LS.LS_s.psi;
+    nx = LS.LS_s.nx;
+    ny = LS.LS_s.ny;
+
+    
+    psi1 = LS.LS1.psi;
+    psi2 = LS.LS2.psi;
+    
+    Da_save = VARIABLES.Da;
+    
+    [Nx,Ny] = size(psi);
+    [LS.LS_s.u, LS.LS_s.v] = deal(zeros(Nx,Ny));
+    [LS.LS1.u, LS.LS1.v] = deal(zeros(Nx,Ny));
+    [LS.LS2.u, LS.LS2.v] = deal(zeros(Nx,Ny));
+else
+    psi = LS.psi;
+    nx = LS.nx;
+    ny = LS.ny;
+    
+    direc = -1;
+    if dissolution
+        direc = 1;
+    end
+    
+    [Nx,Ny] = size(psi);
+    [LS.u, LS.v] = deal(zeros(Nx,Ny));
+
+
+
+end
+
 gamma = VARIABLES.LSgamma;
 beta = VARIABLES.LSbeta;
 
-dissolution = VARIABLES.dissolution;
 
 
 phi = StateVar.phi;
 
-Da = VARIABLES.Da;
-Pe = VARIABLES.Pe;
 
 x = DOMAIN.xp;
 y = DOMAIN.yp;
@@ -27,15 +55,11 @@ y = DOMAIN.yp;
 dx = min(min(DOMAIN.dxp));
 dy = min(min(DOMAIN.dyp));
 
-[Nx,Ny] = size(psi);
-[uI,vI] = deal(zeros(Nx,Ny));
+
+
 
 % epsi = 10*dx;
 % i_vel = 0;
-direc = -1;
-if dissolution
-	direc = 1;
-end
 
 for i=10:Nx-9
     for j=2:Ny-1
@@ -77,7 +101,55 @@ for i=10:Nx-9
             
             end
             
+            if isfield(LS, 'LS1')
+
             
+                I = find(x<x_I);
+                J = find(y<y_I);
+
+                I=I(end);
+                J=J(end);
+
+                I1 = I;
+                I2 = I1+1;
+                I3 = I1;
+                I4 = I1+1;
+
+                J1 = J;
+                J2 = J1;   
+                J3 = J1+1;
+                J4 = J1+1;
+
+                isfluid = psi(I1,J1) || psi(I2,J2) || psi(I3,J3) || psi(I4,J4);
+                issolid1 = psi1(I1,J1)<0 || psi1(I2,J2)<0 ...
+                    || psi1(I3,J3)<0 || psi1(I4,J4)<0;
+                issolid2 = psi2(I1,J1)<0 || psi2(I2,J2)<0 ...
+                    || psi2(I3,J3)<0 || psi2(I4,J4)<0;
+                
+                direc = -1;
+
+                
+                if isfluid
+                    if issolid1 
+                        Da = Da_save.Da1;
+                        
+                        if dissolution.dissolution1
+                            direc = 1;
+                        end
+
+                        
+                    elseif issolid2
+                        Da = Da_save.Da2;
+                        if dissolution.dissolution2
+                            direc = 1;
+                        end
+                        
+                    end
+                end
+                
+            end
+                        
+
 
             [phi_x_pr] = biLinearInterpolation(x,y,phi,x_pr,y_pr);
             if i<Nx-9 && i>10
@@ -93,6 +165,26 @@ for i=10:Nx-9
                 (1 - (abs(psi(i,j))<= gamma));
 %             c = 1;    
             u_I = c * u_I;
+            
+            if isfield(LS, 'LS1')
+                LS.LS_s.u(i,j) = u_I*nx(i,j);
+                LS.LS_s.v(i,j) = u_I*ny(i,j);
+                
+                if issolid1 
+                    LS.LS1.u(i,j) = u_I*nx(i,j);
+                    LS.LS1.v(i,j) = u_I*ny(i,j);
+
+                elseif issolid2
+                    LS.LS2.u(i,j) = u_I*nx(i,j);
+                    LS.LS2.v(i,j) = u_I*ny(i,j);
+
+                end
+                
+            else
+                LS.u(i,j) = u_I*nx(i,j);
+                LS.v(i,j) = u_I*ny(i,j);
+            end
+            
             uI(i,j) = u_I*nx(i,j);
             vI(i,j) = u_I*ny(i,j);
             
@@ -105,10 +197,10 @@ end
 
 % set the velocity at x equal to V and calculate the face velocities
 
-LS.u = uI;
-LS.v = vI;
-maxTravelU = max(max(abs(LS.u)))*VARIABLES.dt;
-maxTravelV = max(max(abs(LS.v)))*VARIABLES.dt;
+% LS.u = uI;
+% LS.v = vI;
+maxTravelU = max(max(abs(uI)))*VARIABLES.dt;
+maxTravelV = max(max(abs(vI)))*VARIABLES.dt;
 disp(['maxTravelU = ', num2str(maxTravelU),'     ','maxTravelV = ', ...
     num2str(maxTravelV)])
 %% Staggered velocity
