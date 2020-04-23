@@ -69,7 +69,7 @@ BC_w_p = 3;
 P0_e = 0;
 %% Transport
 % -alpha(dphi/dn_w)-beta phi=q
-uniMineral = true;
+uniMineral = false;
 BQp = 0;
 
 if uniMineral 
@@ -173,7 +173,7 @@ phi_d=zeros(1,jmax+1);
 
 %% =================== LS parameters
 
-LSCase.case = 3;  %1 ==> circles, 2 ==> flat fracture,
+LSCase.case = 4;  %1 ==> circles, 2 ==> flat fracture,
 % 3 ==> uni-mineral rough fracture, 4 ==>  bi-mineral rough fracture
 %%% ======= cylinder ===============
 LSCase.xc = xc;
@@ -223,6 +223,13 @@ if LSCase.case == 4
 
     [LSCase.BoundaryCurve2] = biMineralBoundaryCurve(DOMAIN, fy, b, ...
         lambda, a, x_0, refine_x, refine_y, xt_s, xt_e, xb_s, xb_e);
+    
+    
+    % the whole solid matrix
+    
+    LSCase.BoundaryCurve_s = uniMineralBoundaryCurve(DOMAIN, ...
+    b, fy, lambda, a, x_0, refine_x);
+
 
 end
 
@@ -232,9 +239,10 @@ psi = LSInitialize(DOMAIN, LSCase);
 
 psi_f = psi;
 if LSCase.case == 4
-    psi_f = min(psi.psi1, psi.psi2);
-    psi_f_sign = (psi.psi1>0).*(psi.psi2>0);
-    psi_f = psi_f.*psi_f_sign;
+%     psi_f = min(psi.psi1, psi.psi2);
+%     psi_f_sign = (psi.psi1>0).*(psi.psi2>0);
+%     psi_f = psi_f.*psi_f_sign;
+    psi_f = psi.psi_s;
 end
     
 psiU = interp2(DOMAIN.yp.*ones(imax+1,1), ones(jmax+1,1)'.*DOMAIN.xp', ...
@@ -270,8 +278,8 @@ if LSCase.case ~= 4
     LS.psi = psi;
 else
     phi(:,:)=phi_init;
-    phi = double(psi_f_sign).*phi;
-    phi_a(1,:) = ones(size(phi(1,:)))*phi_inlet.*(psi_f_sign(1,:));
+    phi = double(psi_f>0).*phi;
+    phi_a(1,:) = ones(size(phi(1,:)))*phi_inlet.*(psi_f(1,:)>0);
     phi(1,:) = phi_a;
     phi_old=phi;
 end
@@ -348,6 +356,10 @@ if LSCase.case == 4
     
     LS.LS2 = struct('psi',psi.psi2);
     [LS.LS2] = LSnormals(LS.LS2,DOMAIN);    
+    
+    LS.LS_s = struct('psi',psi.psi_s);
+    [LS.LS_s] = LSnormals(LS.LS_s,DOMAIN);    
+    
 else 
     [LS] = LSnormals(LS,DOMAIN);    
 
