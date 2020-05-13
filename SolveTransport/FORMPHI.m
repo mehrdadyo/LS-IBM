@@ -1,4 +1,4 @@
-function [phi] = FORMPHI(DOMAIN,phi_vec,BC,phi_A,flag,phi_inside)
+function [phi] = FORMPHI(DOMAIN,phi_vec,BC,phi_A,flag,phi_inside, LS)
 
 % Description:
 %
@@ -37,10 +37,21 @@ end
 phi(imax+1,1:jmax+1)  = phi(imax,1:jmax+1); % Right  (pcor=0)
 for j=1:jmax+1
     for i=1:imax+1
-        if flag(i,j)==2 
+        if flag(i,j)== 2 
             phi(i,j)=phi_inside;
         end
     end
 end
+% % get indices of all cells which are in fluids and have negative phi
+% negIndx = phi<0 & LS.psi>0;
+% % get number of cells that are inside fluid and have positive phi
+% insideVol = sum(sum((phi>0 & LS.psi>0)));
+% % get the sum of all the negative phis
+% totNegflux = sum(sum(phi(negIndx)));
+% % add the negative mass to the fluid cells
+% phi(phi>0 & LS.psi>0) = phi(phi>0 & LS.psi>0) + totNegflux/insideVol;
+% % reset the negative cells to zero
+% phi(phi>0 & LS.psi>0) = 0;
+
 return
 end

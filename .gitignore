@@ -1,0 +1,10 @@
+
+*.mat
+*.asv
+<<<<<<< HEAD
+=======
+*.asv
+>>>>>>> 6fab0f35f9564fb70736b7c9765ba2aef6f2f218
+setUpControlVar.m
+setUpVariablesNonDim3.m
+Untitled3.m

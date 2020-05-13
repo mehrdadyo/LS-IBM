@@ -33,4 +33,23 @@ elseif LSCase.case == 2  % fracture case
     psi = double( abs(d1) <= abs(d2) ).* d1 + ...
         double( abs(d2) < abs(d1) ).* d2;
     
+    
+elseif LSCase.case == 3  % Simple rough fracture
+    psi = simpleFractureInitialize(DOMAIN, LSCase.BoundaryCurve);
+    
+elseif LSCase.case == 4  % bi-mineral rough fracture
+    psi = [];
+    psi.psi1 = biMineralFractureInitialize(DOMAIN, LSCase.BoundaryCurve1);
+    psi.psi1(1,:) = sign(psi.psi1(2,:)).*psi.psi1(1,:);
+    psi.psi1(end,:) = sign(psi.psi1(end-1,:)).*psi.psi1(end,:);
+
+    psi.psi2 = biMineralFractureInitialize(DOMAIN, LSCase.BoundaryCurve2);
+    psi.psi2(1,:) = sign(psi.psi2(2,:)).*psi.psi2(1,:);
+    psi.psi2(end,:) = sign(psi.psi2(end-1,:)).*psi.psi2(end,:);
+    
+    psi.psi_s = simpleFractureInitialize(DOMAIN, LSCase.BoundaryCurve_s);
+
+
+end
+    
 end

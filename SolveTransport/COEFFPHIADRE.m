@@ -1,5 +1,5 @@
 function [CM,ap_p,aw_p,ae_p,as_p,an_p] = ... 
-    COEFFPHIADRE(DOMAIN,Flux,IBM_coeffP,IBM)
+    COEFFPHIADRE(DOMAIN,Flux,IBM_coeffP,IBM,VARIABLES)
             
 % D=0.3;
 % Desciption:
@@ -14,7 +14,7 @@ function [CM,ap_p,aw_p,ae_p,as_p,an_p] = ...
 %  BC=1 ==>     Dirichlet
 %  BC=2 ==>     Constant total flux
 %  BC=3 ==>     % zero diffusive
-
+alpha_q = VARIABLES.alpha_q;
 imax = DOMAIN.imax;
 jmax = DOMAIN.jmax;
 %% Define parameters
@@ -218,7 +218,7 @@ an_p(2:imax,2:jmax-1)=AN;
 ap_p(2:imax,2:jmax)= (-( aw_p(2:imax,2:jmax) +ae_p(2:imax,2:jmax) ...
         +as_p(2:imax,2:jmax) +an_p(2:imax,2:jmax) )+ ... 
         A0_p(2:imax,2:jmax) + dF(2:imax,2:jmax) + ...
-        S_p(2:imax,2:jmax));
+        S_p(2:imax,2:jmax))/alpha_q;
 
     
     

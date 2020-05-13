@@ -1,6 +1,6 @@
-function [resid,resi]=ConvergenceResiduals(U,V,...
+function [resid,resi, message]=ConvergenceResiduals(U,V,...
     RHS_P,ii,time,PCOR,CM_u,CM_v,RHS_U,RHS_V,DOMAIN,disc_scheme,...
-    tol,BC,iter_qq_u,iter_qq_v,err_q_u,err_q_v)
+    tol,BC,PISO, iter_qq_u,iter_qq_v,err_q_u,err_q_v)
 %% Retrieve variable
 imax = DOMAIN.imax;
 jmax = DOMAIN.jmax;
@@ -127,27 +127,41 @@ if disc_scheme == 3
     
 elseif disc_scheme == 1 || disc_scheme == 2
     if resi>tol || ii<2
-        displ = [ii resid(1:3)];
-        s1= 'At SIMPLE iter : %3.0f , Residual for U, V and mass is ';
-        s2=' %8.8f, %8.8f, %8.8f.\n';
-        formatSpec = strcat(s1,s2);
-        fprintf(formatSpec,displ);
+        
+        if PISO 
+            displ = resid(1:3);
+            s1 = 'The PISO method converged, Residual U = %8.8f, V = %8.8f and mass = %8.8f ';
+        else
+            displ = [ii resid(1:3)];
+            s1 = 'At SIMPLE iter : %3.0f , Residual for U = %8.8f, V = %8.8f and mass = %8.8f\n ';
+            if ~mod(ii,2) 
+                fprintf(s1,displ);
+            end
+        end
+%         s1= 'At SIMPLE iter : %3.0f , Residual for U, V and mass is ';
+%         s2=' %8.8f, %8.8f, %8.8f.\n';
+%         formatSpec = strcat(s1,s2);
+%         fprintf(formatSpec,displ);
+        message = sprintf(s1,displ);
     end
 
 
 
     if resi<tol && ii>1
-        s1 = '\n ~~~~~~~~~~~~~~~~~~~~ time = %8.6f';
-        s2 = '~~~~~~~~~~~~~~~~~~~~~ \n';
-        formatSpec = strcat(s1,s2);
-        fprintf(formatSpec,time);
+%         s1 = '\n ~~~~~~~~~~~~~~~~~~~~ time = %8.6f';
+%         s2 = '~~~~~~~~~~~~~~~~~~~~~ \n';
+%         formatSpec = strcat(s1,s2);
+% %         fprintf(formatSpec,time);
+%         message = sprintf(formatSpec,time);
     
-        s1 = 'Residual for U, V and mass is %8.8f, %8.8f, %8.8f';
-        s2 = 'in %3.1f iterations.\n\n';
-        formatSpec = strcat(s1,s2);
-        fprintf(formatSpec,[resid(1:3),ii]);
-        formatSpec = '\n ~~~~~~~~~~~~~~~~~~~~~~%8.6f~~~~~~~~~~~~~~~~~~ \n';
-        fprintf(formatSpec,[]);
+        s1 = 'The SIMPLE method converged with %3.1f iterations, residual for U = %8.8f, V = %8.8f and mass = %8.8f .';
+%         s2 = ' in %3.1f iterations.\n';
+%         formatSpec = strcat(s1,s2);
+%         fprintf(formatSpec,[resid(1:3),ii]);
+        message = sprintf(s1,[ii, resid(1:3)]);
+%         formatSpec = '\n ~~~~~~~~~~~~~~~~~~~~~~%8.6f~~~~~~~~~~~~~~~~~~ \n';
+%         fprintf(formatSpec,[]);
+%         message = [message sprintf(formatSpec,[])];
 
     end
 end

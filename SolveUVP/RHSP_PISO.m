@@ -1,5 +1,5 @@
 function [RHSP,RHSP2] = RHSP_PISO(Soln,u_star,v_star,DOMAIN,IBM_coeffU,...
-    IBM_coeffV)
+    IBM_coeffV, ControlVar)
 % Desciption:
 % Soln.RHSP,Soln.RHSP2] = RHSP_PISO(Soln,StateVar.U_star,...
 %             StateVar.V_star,DOMAIN,IBM_coeffU,IBM_coeffV);
@@ -88,8 +88,18 @@ S0 = Su1 - Su2 + Sv1 - Sv2;
 
 
 RHSP=reshape(S0,[numel(S0),1]);
+RHSP2 = RHSP;
 
-% S0(dirich)=0;
-% RHSP2=RHSP(1:end-1,1);
-RHSP2=RHSP;
-RHSP2(end,:) = []; 
+if strcmp(ControlVar.imposePresBC, 'middle')
+    J = ceil((jmax-1)/2);
+    I = (J-2) * (DOMAIN.imax-1) + imax-1;
+    RHSP2(I,:) = []; 
+elseif strcmp(ControlVar.imposePresBC, 'top')
+    RHSP2(end,:) = [];
+elseif strcmp(ControlVar.imposePresBC, 'bottom')
+    J = 2;
+    I = (J-2) * (DOMAIN.imax-1) + imax-1;
+    RHSP2(I,:) = []; 
+end
+
+

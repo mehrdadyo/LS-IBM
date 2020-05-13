@@ -1,5 +1,5 @@
 function [RHSSCALAR_c] = RHSPHIADRE(StateVar,BC,...
-        Flux,DOMAIN,IBM_coeffP,IBM)
+        Flux,DOMAIN,IBM_coeffP,IBM, VARIABLES, Soln)
 % Desciption:
 %
 %% Define parameters
@@ -8,6 +8,8 @@ imax = DOMAIN.imax;
 jmax = DOMAIN.jmax;
 L    = (imax-1)*(jmax-1); % Length of the matrix
 
+alpha_q = VARIABLES.alpha_q;
+ap_p = Soln.ap_p;
 
 Fe = Flux.ConvF_phi.Fe_p;
 Fw = Flux.ConvF_phi.Fw_p;
@@ -60,6 +62,7 @@ S_e=zeros(imax+1,jmax+1);
 S_w=zeros(imax+1,jmax+1);
 S_n=zeros(imax+1,jmax+1);
 S_s=zeros(imax+1,jmax+1);
+S_ur=zeros(imax+1,jmax+1);
 
 
 
@@ -110,7 +113,7 @@ S_s(3:imax-1,3:jmax)=Fs(3:imax-1,3:jmax).*( alphas(3:imax-1,3:jmax).* ...
 
 S_w(2,2:jmax) = (Fw(2,2:jmax)+ D2_a(1,2:jmax).*phi_a(1,2:jmax) );
 
-
+S_ur(2:imax,2:jmax) = ap_p(2:imax,2:jmax) .* (1-alpha_q) .* phi(2:imax,2:jmax);
 %% Immersed Boundary Treating
 
 %****************************
@@ -123,6 +126,8 @@ for i=1:size(I_solid,2)
     S_n(I_solid(i),J_solid(i)) = 0;
     S_s(I_solid(i),J_solid(i)) = 0;
     S0(I_solid(i),J_solid(i)) = phi_inside;
+    S_ur(I_solid(i),J_solid(i)) = 0;
+
         
 end
 
@@ -138,9 +143,10 @@ for i=1:size(I_g,2)
     S_n(I_g(i),J_g(i))=0;
     S_s(I_g(i),J_g(i))=0;
     S0(I_g(i),J_g(i))=RHS_phi_g(1,i);
+    S_ur(I_g(i),J_g(i))=0;
 end
     
-S = S_e + S_w +S_n +S_s + S0;
+S = S_e + S_w +S_n +S_s + S0 + S_ur;
 
 S = S(2:imax,2:jmax);    
 

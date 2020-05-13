@@ -2,7 +2,7 @@
 
 %%
 
-function [G]= LSreInitilization(psinp,psi)
+function [G]= LSreinitilizationCoeff(psinp,psi)
 
 
 

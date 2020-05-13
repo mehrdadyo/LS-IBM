@@ -68,10 +68,6 @@ phi_inside = IBM.phi_inside_u;
 alpha_u = VARIABLES.alpha_u;
 
         
-% CoEWu 
-% CoEWv
-% dy ==> dyv
-
         
 %  BC=1 ==>     Dirichlet
 %  BC=2 ==>     Constant total flux
@@ -304,6 +300,7 @@ elseif disc_scheme == 2  %% CENTRAL DIFFERENCE scheme
 %(2:Nx-1, 2:Ny). For this compuitational cells the marginal coefficients 
 % are modified due to the BC. This leaves us with only U(3:Nx-2, 3:Ny-1). 
 % Since AE and AW are not changed for top and bottom boundary cells 
+
 % ==> AE and AW have the size of (3:Nx-2,2:Ny), 
 % for AN and AS ==> (2:Nx-1, 3:Ny-1). 
 
@@ -320,21 +317,21 @@ elseif disc_scheme == 2  %% CENTRAL DIFFERENCE scheme
         (1- CoEWv(2:imax-1,2:jmax-1)).*Fs(2:imax-1,3:jmax) );
     
     
-    if BC_e_p == 1
-    
-        AE= -( De(2:imax-1,2:jmax) - ...
-            CoEWu(2:imax-1,2:jmax) .*Fe(2:imax-1,2:jmax) );
-
-        AW= -( Dw(3:imax,2:jmax) + ... 
-            (1- CoEWu(2:imax-1,2:jmax)).*Fw(3:imax,2:jmax) );
-
-        AN= -( Dn(2:imax,2:jmax-1) - ...
-            (CoEWv(2:imax,2:jmax-1)).*Fn(2:imax,2:jmax-1) );
-
-        AS= -( Ds(2:imax,3:jmax) + ...
-            (1- CoEWv(2:imax,2:jmax-1)).*Fs(2:imax,3:jmax) );
-        
-    end
+%     if BC_e_p == 1
+%     
+%         AE= -( De(2:imax-1,2:jmax) - ...
+%             CoEWu(2:imax-1,2:jmax) .*Fe(2:imax-1,2:jmax) );
+% 
+%         AW= -( Dw(3:imax,2:jmax) + ... 
+%             (1- CoEWu(2:imax-1,2:jmax)).*Fw(3:imax,2:jmax) );
+% 
+%         AN= -( Dn(2:imax,2:jmax-1) - ...
+%             (CoEWv(2:imax,2:jmax-1)).*Fn(2:imax,2:jmax-1) );
+% 
+%         AS= -( Ds(2:imax,3:jmax) + ...
+%             (1- CoEWv(2:imax,2:jmax-1)).*Fs(2:imax,3:jmax) );
+%         
+%     end
 
 
 %% West Boundary i=2
@@ -343,58 +340,73 @@ elseif disc_scheme == 2  %% CENTRAL DIFFERENCE scheme
     S_p_w = (Dw(2,2:jmax) + (1- CoEWu(1,2:jmax))  .*Fw(2,2:jmax))...
         *(BC_w_u==1);
     
+    S_p(2,2:jmax)   =   S_p(2,2:jmax)+S_p_w;
+  
 
 
 %% East Boundary i=Nx-1
-
     AE_e=zeros(1,size(AE,2));
-
-
-
-
+   
     
-
-
-
-    S_p(2,2:jmax)   =   S_p(2,2:jmax)+S_p_w;
+    S_p_e = (De(imax-1,2:jmax) - CoEWu(imax-1,2:jmax)  .*Fe(imax-1,2:jmax))...
+        *(BC_e_u==1);
+    S_p(imax-1,2:jmax)   =   S_p(imax-1,2:jmax)+S_p_e;
     
-    
-    if BC_e_p == 1
-        S_p_e= ( De(imax,2:jmax) ...
-        -  CoEWu(imax-1,2:jmax).*Fe(imax,2:jmax) )*(BC_e_u==1);
-        
-        S_p_s= (Ds(2:imax,2)./(1-CoEWv(2:imax,2)) + Fs(2:imax,2)) * ...
-        (BC_s_u==1);
-    
-        S_p_n= (Dn(2:imax,jmax)./CoEWv(2:imax,jmax) - Fn(2:imax,jmax))...
-            * (BC_n_u==1);
-        
-        S_p(imax,2:jmax)  =   S_p(imax,2:jmax)+S_p_e;
-        S_p(2:imax,2) =   S_p(2:imax,2)+S_p_s;
-        S_p(2:imax,jmax)  =   S_p(2:imax,jmax)+S_p_n;
-        
-    else 
-        
-        S_p_e= ( De(imax-1,2:jmax) ...
-            -  CoEWu(imax-1,2:jmax).*Fe(imax-1,2:jmax) )*(BC_e_u==1);
-        
-        S_p_s= (Ds(2:imax-1,2)./(1-CoEWv(2:imax-1,1)) + Fs(2:imax-1,2))...
-            * (BC_s_u==1);
-        
-        S_p_n= (Dn(2:imax-1,jmax)./CoEWv(2:imax-1,jmax) - Fn(2:imax-1,jmax))...
-            * (BC_n_u==1); 
-        
-        S_p(imax-1,2:jmax)  =   S_p(imax-1,2:jmax)+S_p_e;
-        S_p(2:imax-1,2) =   S_p(2:imax-1,2)+S_p_s;
-        S_p(2:imax-1,jmax)  =   S_p(2:imax-1,jmax)+S_p_n;
-        
+%     if BC_e_p == 1
+%         S_p_e= ( De(imax,2:jmax) ...
+%         -  CoEWu(imax-1,2:jmax).*Fe(imax,2:jmax) )*(BC_e_u==1);
+%         
+%         S_p_s= (Ds(2:imax,2)./(1-CoEWv(2:imax,2)) + Fs(2:imax,2)) * ...
+%         (BC_s_u==1);
+%     
+%         S_p_n= (Dn(2:imax,jmax)./CoEWv(2:imax,jmax) - Fn(2:imax,jmax))...
+%             * (BC_n_u==1);
+%         
+%         S_p(imax,2:jmax)  =   S_p(imax,2:jmax)+S_p_e;
+%         S_p(2:imax,2) =   S_p(2:imax,2)+S_p_s;
+%         S_p(2:imax,jmax)  =   S_p(2:imax,jmax)+S_p_n;
+%         
+%     else 
+%         
+%         S_p_e= ( De(imax-1,2:jmax) ...
+%             -  CoEWu(imax-1,2:jmax).*Fe(imax-1,2:jmax) )*(BC_e_u==1);
+%         
+%         S_p_s= (Ds(2:imax-1,2)./(1-CoEWv(2:imax-1,1)) + Fs(2:imax-1,2))...
+%             * (BC_s_u==1);
+%         
+%         S_p_n= (Dn(2:imax-1,jmax)./CoEWv(2:imax-1,jmax) - Fn(2:imax-1,jmax))...
+%             * (BC_n_u==1); 
+%         
+%         S_p(imax-1,2:jmax)  =   S_p(imax-1,2:jmax)+S_p_e;
+%         S_p(2:imax-1,2) =   S_p(2:imax-1,2)+S_p_s;
+%         S_p(2:imax-1,jmax)  =   S_p(2:imax-1,jmax)+S_p_n;
+%         
+% 
+%     end
 
-    end
+%% South Boundary j=2
+% AS_s = zeros(size(AS,1),1);
+
+S_p_s = 2*(Ds(2:imax-1,2) + (1- CoEWv(2:imax-1,2)  .*Fs(2:imax-1,2)))...
+    *(BC_s_u==1);
+
+S_p(2:imax-1,2)   =   S_p(2:imax-1,2)+S_p_s;
+
+%% South Boundary j=jmax
+% AN_n = zeros(size(AN,1),1);
+
+S_p_n = 2*(Dn(2:imax-1,jmax) - CoEWv(2:imax-1,jmax)  .*Fn(2:imax-1,jmax))...
+    *(BC_n_u==1);
+
+S_p(2:imax-1,jmax)   =   S_p(2:imax-1,jmax)+S_p_n;
+
 end
 
 AW=[AW_w; AW];
 AE=[AE; AE_e];
 
+% AS = [AS_s AS];
+% AN = [AN AN_n];
 if BC_e_p == 1
     
     aw_u(2:imax,2:jmax)=AW;
@@ -460,33 +472,42 @@ S_ur(2:imax,2:jmax) = ap_u(2:imax,2:jmax)* coef.* U_star_old(2:imax,2:jmax);
 S_u_w= U_a(:,2:jmax).*S_p_w * (BC_w_u==1);
 
 %EAST  i=Nx-1
-S_u_e=U_b(:,2:jmax).*S_p_e * (BC_e_u==1);
+S_u_e= U_b(:,2:jmax).*S_p_e * (BC_e_u==1);
+
+%SOUTH  j=2
+S_u_s= U_c(2:imax-1,:).*S_p_s * (BC_s_u==1);
+
+%EAST  i=Nx-1
+S_u_n= U_d(2:imax-1,:).*S_p_n * (BC_n_u==1);
+
 
 S_u(2,2:jmax)   =   S_u(2,2:jmax)+S_u_w;
 S_u(imax-1,2:jmax)  =   S_u(imax-1,2:jmax)+S_u_e;
+S_u(2:imax-1,2)   =   S_u(2:imax-1,2)+S_u_s;
+S_u(2:imax-1,jmax)  =   S_u(2:imax-1,jmax)+S_u_n;
 
-
-if BC_e_p ~= 1
-    %SOUTH  j=2
-    S_u_s= U_c(2:imax-1,:).*S_p_s * (BC_s_u==1);
-
-    %NORTH  j=Ny
-    S_u_n=U_d(2:imax-1,:).*S_p_n * (BC_n_u==1);
-    
-    S_u(2:imax-1,2) =   S_u(2:imax-1,2)+S_u_s;
-    S_u(2:imax-1,jmax)  =   S_u(2:imax-1,jmax)+S_u_n;
-
-elseif BC_e_p == 1
-    %SOUTH  j=2
-    S_u_s= U_c(2:imax,:).*S_p_s * (BC_s_u==1);
-
-    %NORTH  j=Ny
-    S_u_n=U_d(2:imax,:).*S_p_n * (BC_n_u==1);
-    
-    S_u(2:imax,2) =   S_u(2:imax,2)+S_u_s;
-    S_u(2:imax,jmax)  =   S_u(2:imax,jmax)+S_u_n;
-
-end
+%%%%% CHECK LATER for CONSTANT P
+% if BC_e_p ~= 1
+%     %SOUTH  j=2
+%     S_u_s= U_c(2:imax-1,:).*S_p_s * (BC_s_u==1);
+% 
+%     %NORTH  j=Ny
+%     S_u_n=U_d(2:imax-1,:).*S_p_n * (BC_n_u==1);
+%     
+%     S_u(2:imax-1,2) =   S_u(2:imax-1,2)+S_u_s;
+%     S_u(2:imax-1,jmax)  =   S_u(2:imax-1,jmax)+S_u_n;
+% 
+% elseif BC_e_p == 1
+%     %SOUTH  j=2
+%     S_u_s= U_c(2:imax,:).*S_p_s * (BC_s_u==1);
+% 
+%     %NORTH  j=Ny
+%     S_u_n=U_d(2:imax,:).*S_p_n * (BC_n_u==1);
+%     
+%     S_u(2:imax,2) =   S_u(2:imax,2)+S_u_s;
+%     S_u(2:imax,jmax)  =   S_u(2:imax,jmax)+S_u_n;
+% 
+% end
     
 %=====
 % AP=ap_u(2:imax-1,2:jmax);

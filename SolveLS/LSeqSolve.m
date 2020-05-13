@@ -6,122 +6,59 @@ function [LS] = LSeqSolve(LS,StateVar,VARIABLES,DOMAIN)
 % ONE thing I'm not quite sure about is whether I have to use velocities at
 % the n+1 and n+1/2 in RK stages (to be checked later).
 %% =======================================================================
-phi = StateVar.phi;
-psi_n = LS.psi;
-Da = VARIABLES.Da;
-Pe = VARIABLES.Pe;
-dt = VARIABLES.dt;
-n_iter = VARIABLES.n_iter_ReLS;
-dtau = VARIABLES.dtau;
-
-[u,v] = LSVelocityExtrapolation(phi,Da,Pe,DOMAIN,LS);
-
-LS.u = u;
-LS.v = v;
-equation = "LevelSetEqn";
-scheme = VARIABLES.TimeSchemeLS;
-% convective fluxes
-[psinp] = LSFindDerivative(u,v,psi_n,DOMAIN,equation);
-
-% psie = psinp.psie;
-% psiw = psinp.psiw;
-% psin = psinp.psin;
-% psis = psinp.psis;
-epsSign = min(min(DOMAIN.dxp))*2;
-
-psi_n1 = psi_n - dt*( u.*psinp.psi_x + v.*psinp.psi_y );
-
-if scheme == "RK1"
-
-    psi = psi_n1; 
-
-elseif scheme == "RK2" 
-    
-    [psinp] = LSFindDerivative(u,v,psi_n1,DOMAIN,equation);
-
-
-
-    psi_n2 = psi_n1 - dt*( u.*psinp.psi_x + v.*psinp.psi_y );
-
-    psi = 0.5 * (psi_n + psi_n2);
+% extrapolate the velocity
+if isfield(LS, 'LS1')
+    % extrapolate the velocity
+    [LS] = LSVelocityExtrapolation(VARIABLES, StateVar, DOMAIN, LS);
     
 
-elseif scheme == "RK3"
+    % save phi_o for getting the N_o the tube for reinitialization eq
+    psi_o = LS.LS1.psi;
+    % solve LS eq to get tilda psi
+    LS.LS1.psi = solveHJEq(LS.LS1, VARIABLES, DOMAIN, psi_o);
+    % reinitialize LS to a signed distance function
+    LS.LS1.psi = LSreinitialization(VARIABLES, DOMAIN, LS.LS1, psi_o);
+    % compute the normals
+%     [LS.LS1] = LSnormals(LS.LS1,DOMAIN);    
     
-    [psinp] = LSFindDerivative(u,v,psi_n1,DOMAIN,equation);
+    % save phi_o for getting the N_o the tube for reinitialization eq
+    psi_o = LS.LS2.psi;
+    % solve LS eq to get tilda psi
+    LS.LS2.psi = solveHJEq(LS.LS2, VARIABLES, DOMAIN, psi_o);
+    % reinitialize LS to a signed distance function
+    LS.LS2.psi = LSreinitialization(VARIABLES, DOMAIN, LS.LS2, psi_o);
+    % compute the normals
+%     [LS.LS2] = LSnormals(LS.LS2,DOMAIN);    
     
-    psi_n2 = psi_n1 - dt*( u.*psinp.psi_x + v.*psinp.psi_y );
+    psi_o = LS.LS_s.psi;
+    % solve LS eq to get tilda psi
+    LS.LS_s.psi = solveHJEq(LS.LS_s, VARIABLES, DOMAIN, psi_o);
+    % reinitialize LS to a signed distance function
+    LS.LS_s.psi = LSreinitialization(VARIABLES, DOMAIN, LS.LS_s, psi_o);
+    
+    % compute the normals
+    [LS.LS_s] = LSnormals(LS.LS_s,DOMAIN);
 
-
-    psi_n12 = 0.75 * psi_n + 0.25 * psi_n2;
-    
-    [psinp] = LSFindDerivative(u,v,psi_n1,DOMAIN,equation);
-    
-    psi_n32 = psi_n12 - dt * ( u.*psinp.psi_x + v.*psinp.psi_y );
-    
-    psi = (psi_n + 2* psi_n32)/3;
-
+else
+    % extrapolate the velocity
+    [LS] = LSVelocityExtrapolation(VARIABLES, StateVar, DOMAIN, LS);
+    % save phi_o for getting the N_o the tube for reinitialization eq
+    psi_o = LS.psi;
+    % solve LS eq to get tilda psi
+    LS.psi = solveHJEq(LS, VARIABLES, DOMAIN, psi_o);
+    % reinitialize LS to a signed distance function
+    LS.psi = LSreinitialization(VARIABLES, DOMAIN, LS, psi_o);
+    % compute the normals
+    [LS] = LSnormals(LS,DOMAIN);
 end
-
-psi_n = psi;
-
-%% Reinitialize the distance function
-equation = "ReinitializationEqn";
-
-scheme = VARIABLES.TimeSchemeRLS;
-
-for i=1:n_iter
-      
-    [psinp] = LSFindDerivative(u,v,psi,DOMAIN,equation);
-    
-    [G]= LSreInitilization(psinp,psi_n);
-    fl = double(G ~= 0);
-    SignPsi = psi_n./sqrt(psi_n.^2+epsSign.^2);
-%     psi_m1 = psi - dtau*sign(psi_n).*(G-1);
-    psi_m1 = psi - dtau*SignPsi.*(G-1).*fl;
-
-    
-    if scheme == "RK1"
-
-        psi = psi_m1; 
-
-    elseif scheme == "RK2" 
-
-        [psinp] = LSFindDerivative(u,v,psi_m1,DOMAIN,equation);
-        [G]= LSreInitilization(psinp,psi_n);
-        fl = double(G ~= 0);
-%         psi_m2 = psi_m1 - dtau*sign(psi_n).*(G-1);
-        psi_m2 = psi_m1 - dtau*SignPsi.*(G-1).*fl;
-
-        psi = 0.5 * (psi + psi_m2);
-
-
-    elseif scheme == "RK3"
-
-        [psinp] = LSFindDerivative(u,v,psi_m1,DOMAIN,equation);
-        [G]= LSreInitilization(psinp,psi_n);
-        fl = double(G ~= 0);
-
-%         psi_m2 = psi_m1 - dtau*sign(psi_n).*(G-1);
-        psi_m2 = psi_m1 - dtau*SignPsi.*(G-1).*fl;
-
-        psi_m12 = 0.75 * psi + 0.25 * psi_m2;
-
-        [psinp] = LSFindDerivative(u,v,psi_m12,DOMAIN,equation);
-        [G]= LSreInitilization(psinp,psi_n);
-        fl = double(G ~= 0);
-
-%         psi_m32 = psi_m12 - dtau*sign(psi_n).*(G-1);
-        psi_m32 = psi_m12 - dtau*SignPsi.*(G-1).*fl;    
-
-        psi = (psi + 2* psi_m32)/3;
-
-    end
-    
-    
-end
-LS.psi = psi;
-[LS] = LSnormals(LS,DOMAIN);
+% % save phi_o for getting the N_o the tube for reinitialization eq
+% psi_o = LS.psi;
+% % solve LS eq to get tilda psi
+% LS.psi = solveHJEq(LS, VARIABLES, DOMAIN, psi_o);
+% % reinitialize LS to a signed distance function
+% LS.psi = LSreinitialization(VARIABLES, DOMAIN, LS, psi_o);
+% % compute the normals
+% [LS] = LSnormals(LS,DOMAIN);
 
 
 
