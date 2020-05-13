@@ -1,6 +1,6 @@
 clc
 clear all
-close all
+% close all
 % profile on
 
 % Determine where your m-file's folder is.
@@ -8,7 +8,7 @@ folder = fileparts(which(mfilename));
 % Add that folder plus all subfolders to the path.
 addpath(genpath(folder));
 
-[StateVar,VARIABLES,DOMAIN,BC,IBM,LS, LSCase]= setUpVariablesNonDim3;
+[StateVar,VARIABLES,DOMAIN,BC,IBM,LS, LSCase]= setUpVariablesNonDim;
 %% ==============================
 % load 'initial at any time '
 

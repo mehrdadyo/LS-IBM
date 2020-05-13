@@ -1,5 +1,5 @@
 function [RHSP,RHSP2] = RHSP(u_star,v_star,DOMAIN,...
-    IBM_coeffU,IBM_coeffV)
+    IBM_coeffU,IBM_coeffV, ControlVar)
 % Desciption:
 % FV
 %% Define parameters
@@ -49,8 +49,19 @@ RHSP=reshape(S0,[numel(S0),1]);
 
 % S0(dirich)=0;
 RHSP2=RHSP;
-J = ceil((jmax-1)/2);
-I = (J-2) * (DOMAIN.imax-1) + imax-1;
-RHSP2(I,:) = []; 
-% RHSP2(end,:) = []; 
+
+
+if strcmp(ControlVar.imposePresBC, 'middle')
+    J = ceil((jmax-1)/2);
+    I = (J-2) * (DOMAIN.imax-1) + imax-1;
+    RHSP2(I,:) = []; 
+elseif strcmp(ControlVar.imposePresBC, 'top')
+    RHSP2(end,:) = [];
+elseif strcmp(ControlVar.imposePresBC, 'bottom')
+    J = 2;
+    I = (J-2) * (DOMAIN.imax-1) + imax-1;
+    RHSP2(I,:) = []; 
+end
+
+
 

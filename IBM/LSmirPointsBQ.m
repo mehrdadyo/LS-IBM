@@ -2,7 +2,7 @@ function [landa,landa_g_1,landa_g_2,landa_g_3,landa_g_4,A1_g,I_e,J_e,...
     I1,J1,I2,J2,I3,J3,I4,J4,numg,landa_g_5,landa_g_6,I5,J5,I6,J6,nx_g,...
     ny_g, message] = ...
     LSmirPointsBQ(x,y,alpha,beta,q,X_g,Y_g,BQ,dx,dy,I_g,J_g,LS,...
-    UVP, phi, treshold, flag_s2)
+    UVP, phi, treshold, flag_s2, x_0, lx)
 
 psi = LS.psi;
 nx = LS.nx;
@@ -248,11 +248,13 @@ for i=1:numg
 %                 phi_IB = (q*d + 2*alpha*phi_m - alpha*d* dphi_m)/...
 %                     (2*alpha-beta*d);
 %                 phi_IB
-%                 if phi_IB < treshold
+                
+                if J>= length(y)-4 || J<= 5 || ...
+                        x(I)<= x_0 || x(I)>= lx - x_0 
 %                     disp('Reached zero concentartion at the boundary, STOPPED the reaction')
-%                     beta = 0;
-%                     
-%                 end
+                    beta = 0;
+                    
+                end
 
             end
             

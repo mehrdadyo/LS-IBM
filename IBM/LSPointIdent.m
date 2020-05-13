@@ -217,7 +217,7 @@ flag = 2*double(psi<0) + flag;
 % FluidCorrection = double((flag == 2) .* (NBabsSolid == 0));
 % 
 % 
-% flag = flag + 2*SolidCorrection -2*FluidCorrection;
+% flag = flag + 2*SolidCorrection; %-2*FluidCorrection;
 % 
 
 NBabs (2:end-1,2:end-1) =  flag(3:end,2:end-1) + ...
@@ -233,9 +233,9 @@ NBabs (2:end-1,2:end-1) =  flag(3:end,2:end-1) + ...
 % flag (2:end-1,2:end-1) = flag (2:end-1,2:end-1)...
 %     - double(NBabs (2:end-1,2:end-1) ~= 8) .* double(flag (2:end-1,2:end-1) == 2);
 
-flag (10:end-9,2:end-1) = flag (10:end-9,2:end-1)...
-    - double(NBabs (10:end-9,2:end-1) ~= 8) .* ...
-    double(flag (10:end-9,2:end-1) == 2);
+flag (2:end-1,2:end-1) = flag (2:end-1,2:end-1)...
+    - double(NBabs (2:end-1,2:end-1) ~= 8) .* ...
+    double(flag (2:end-1,2:end-1) == 2);
 
 
 [I_g,J_g,~] = find(flag == 1);
@@ -254,12 +254,19 @@ end
 
 
 %% Virtual points
+if LS.case == 3 || LS.case == 4
+    x_0 = DOMAIN.x_0;
+
+else
+   x_0 = dx;     
+end
+
 
 [landa,landa_g_1,landa_g_2,landa_g_3,landa_g_4,A1_g,I_e,J_e,...
     I1,J1,I2,J2,I3,J3,I4,J4,numg,landa_g_5,landa_g_6,I5,J5,I6,J6,nx,ny,...
     message] = ...
     LSmirPointsBQ(x,y,alpha,beta,q,X_g,Y_g,BQ,dx,dy,I_g,J_g,LStemp,...
-    UVP, phi, treshold, flag_s2);
+    UVP, phi, treshold, flag_s2, x_0, DOMAIN.lx);
 
 %% Solid Points indices
 [J_solid,I_solid] = find(flag' == 2);

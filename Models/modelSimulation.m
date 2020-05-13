@@ -23,8 +23,8 @@ fprintf(['       ', message,'           \n']);
 fprintf('=========================================================================== \n');
 
 % for iTime = 1:ControlVar.noLStime
-ControlVar.endTime = ControlVar.noLStime * VARIABLES.dt;
-iTime = 0;
+ControlVar.endTime = ControlVar.time + ControlVar.noLStime * VARIABLES.dt;
+iTime = ControlVar.iStart;
 while ControlVar.time < ControlVar.endTime         
     ControlVar.time = ControlVar.time+VARIABLES.dt;
     iTime = iTime + 1; %ceil(ControlVar.time/ VARIABLES.dt);
@@ -110,7 +110,7 @@ while ControlVar.time < ControlVar.endTime
 %% ========================================================================
     
     
-    if ~mod(iTime, 10)
+    if ~mod(iTime, ControlVar.savedat)
         flowfilename = strcat('dataRDE',num2str(iTime),'dt.mat');
         matfile = strcat('Output/', flowfilename);
  

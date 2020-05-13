@@ -1,4 +1,4 @@
-function [PCOR] = FORMPCOR(PCORVEC,DOMAIN)
+function [PCOR] = FORMPCOR(PCORVEC,DOMAIN, ControlVar)
 
 % Description:
 %
@@ -13,10 +13,18 @@ jmax = DOMAIN.jmax;
 %% Initialize Storage
 PCOR       = zeros(imax+1,jmax+1);
 % PCORVEC1 = [PCORVEC ; 0];
+if strcmp(ControlVar.imposePresBC, 'middle')
+    J = ceil((jmax-1)/2);
+    I = (J-2) * (DOMAIN.imax-1) + imax-1;
+elseif strcmp(ControlVar.imposePresBC, 'top')
+    J = jmax;
+    I = (J-2) * (DOMAIN.imax-1) + imax-1;
+elseif strcmp(ControlVar.imposePresBC, 'bottom')
+    J = 2;
+    I = (J-2) * (DOMAIN.imax-1) + imax-1;
+end
 
-PCOR       = zeros(imax+1,jmax+1);
-J = ceil((jmax-1)/2);
-I = (J-2) * (DOMAIN.imax-1) + imax-1;
+% I = (J-2) * (DOMAIN.imax-1) + imax-1;
 PCORVEC1 = [PCORVEC(1:I-1,:) ; 0; PCORVEC(I:end,:)];
 
 %% Put solution for pressure into matrix form
@@ -38,7 +46,7 @@ PCOR(2:imax,2:jmax) = reshape(PCORVEC1, [imax-1, jmax-1]);
 PCOR(2:imax,1)       = PCOR(2:imax,2);     % Bottom (dpcor/dy=0)
 PCOR(2:imax,jmax+1)  = PCOR(2:imax,jmax);  % Top    (dpcor/dy=0)
 PCOR(1,2:jmax)       = PCOR(2,2:jmax);     % Left   (dpcor/dx=0)
-PCOR(imax+1,2:jmax)  = -PCOR(imax,2:jmax); % Right  (pcor=0)
+PCOR(imax+1,2:jmax)  = PCOR(imax,2:jmax); % Right  (pcor=0)
 
 return
 end

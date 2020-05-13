@@ -3,21 +3,6 @@ function [CM_v,S,aw_v,ae_v,as_v,an_v,ap_v,d_v,d_v_sec] = COEFFV(V_old,P,...
         disc_scheme)
 
         
-%         
-%         V_old,P,...
-%             De,Dw,Dn,Ds,Fe,Fw,Fn,Fs,dF,A0_p,...
-%             landa_g_1,landa_g_2,landa_g_3,landa_g_4,...
-%             I_solid,J_solid,I_g,J_g,I_e,J_e,RHS_V_g,numg,...
-%             alpha_v,phi_inside,V_star_old)
-% CoNSu 
-% CoNSv
-% dx ==> dxu
-
-%  BC=1 ==>     Dirichlet
-%  BC=2 ==>     Constant total flux
-%  BC=3 ==>     % zero diffusive
-% global CoNSu V_a V_b V_c V_d BC_e_v BC_w_v BC_n_v BC_s_v dxu imax jmax
-
 %% Retrieve variables from structs
 
 imax = DOMAIN.imax;
@@ -273,96 +258,68 @@ elseif disc_scheme ==2
 % ==> AE and AW have the size of (3:Nx-1,2:Ny-1), 
 % for AN and AS ==> (2:Nx, 3:Ny-2). 
     
-    AE= -( De(3:imax-1,2:jmax-1) - ...
-        CoNSu(3:imax-1,2:jmax-1) .*Fe(3:imax-1,2:jmax-1) );
+
+    AE= -( De(2:imax-1,2:jmax-1) - ...
+        CoNSu(2:imax-1,2:jmax-1) .*Fe(2:imax-1,2:jmax-1) );
     
-    AW= -( Dw(3:imax-1,2:jmax-1) + ... 
-    (1- CoNSu(2:imax-2,2:jmax-1)).*Fw(3:imax-1,2:jmax-1) );
-    
-    
-    AN= -( Dn(2:imax,3:jmax-2) - ...
-        (CoNSv(2:imax,3:jmax-2)).*Fn(2:imax,3:jmax-2) );
-    
-    AS= -( Ds(2:imax,3:jmax-2) + ...
-        (1- CoNSv(2:imax,2:jmax-3)).*Fs(2:imax,3:jmax-2) );
+    AW= -( Dw(3:imax,2:jmax-1) + ... 
+    (1- CoNSu(3:imax,2:jmax-1)).*Fw(3:imax,2:jmax-1) );
     
     
+    AN= -( Dn(2:imax,2:jmax-2) - ...
+        (CoNSv(2:imax,2:jmax-2)).*Fn(2:imax,2:jmax-2) );
+    
+    AS= -( Ds(2:imax,3:jmax-1) + ...
+        (1- CoNSv(2:imax,3:jmax-1)).*Fs(2:imax,3:jmax-1) );
 
 %% West Boundary i=2
     AW_w=zeros(1,size(AW,2));
-
-    if BC_w_v==1          % 1 for Dirichlet, 3 for Neumann
-        AE_w = -( De(2,2:jmax-1) - CoNSu(2,2:jmax-1) .*Fe(2,2:jmax-1) );
-        S_p_w= Dw(2,2:jmax-1)./(1-CoNSu(1,2:jmax-1)) + Fw(2,2:jmax-1);
-    elseif BC_w_v==3
-        AE_w = -( De(2,2:jmax-1) - CoNSu(2,2:jmax-1) .*Fe(2,2:jmax-1) );
-    %S_p(2,2:Ny)= 0
-    end
+    
+    S_p_w =  2*(Dw(2,2:jmax-1) + (1- CoNSu(2,2:jmax-1)).*Fw(2,2:jmax-1)) ...
+        *(BC_w_v == 1);
+    
+    S_p(2,2:jmax-1) = S_p_w;
 
 
 %% East Boundary i=Nx-1
 
     AE_e=zeros(1,size(AE,2));
-
-    if BC_e_v==1          % 1 for Dirichlet, 3 for Neumann
-        AW_e= -( Dw(imax,2:jmax-1) + ...
-            (1- CoNSu(imax-1,2:jmax-1)) .*Fw(imax,2:jmax-1) );
-%     S_p(imax,2:jmax-1)=  De(imax,2:jmax-1)./ ...
-%         CoNSu(imax,2:jmax-1) + Fe(imax,2:jmax-1) ;
-        S_p_e=  De(imax,2:jmax-1)./...
-            CoNSu(imax,2:jmax-1) + Fe(imax,2:jmax-1) ;
     
-    elseif BC_e_v==3
-        AW_e= -( Dw(imax,2:jmax-1) + ...
-            (1- CoNSu(imax-1,2:jmax-1)) .*Fw(imax,2:jmax-1) );
-    % S_p(Nx-1,2:Ny)= 0;
-    end
+    S_p_e = 2*(De(imax,2:jmax-1) - ...
+        CoNSu(imax,2:jmax-1) .*Fe(imax,2:jmax-1)) * (BC_e_v==1);
+    
+    S_p(imax, 2:jmax-1) = S_p(imax, 2:jmax-1) + S_p_e;
+
+
 
   
 %% South Boundary j=2
-    if BC_s_v==1          % 1 for Dirichlet, 3 for Neumann
-        AN_s= -( Dn(2:imax,2) - (CoNSv(2:imax,2)).*Fn(2:imax,2) );
-%     S_p(2:imax,2)= Ds(2:imax,2) + alphas(2:imax,2)  .*Fs(2:imax,2);
-        S_p_s= -( Ds(2:imax,2) + ...
-        (1- CoNSv(2:imax,1)).*Fs(2:imax,2) );
 
-    elseif BC_s_v==3
-        AN_s= -( Dn(2:imax,2) - (CoNSv(2:imax,2)).*Fn(2:imax,2) );
-    % S_p(2:Nx-1,2)= 0;
-    end
+    AS_s = zeros(size(AS,1),1);
+    S_p_s = ( Ds(2:imax,2) + (1- CoNSv(2:imax,1)).*Fs(2:imax,2) ) * ...
+        (BC_s_v==1 );
+    S_p(2:imax, 2) = S_p(2:imax, 2) + S_p_s;
+    
 
     
     
 %% North Boundary j=Ny
-    if BC_n_v==1          % 1 for Dirichlet, 3 for Neumann
-        AS_n= -( Ds(2:imax,jmax-1) + ...
-            (1- CoNSv(2:imax,jmax-2)).*Fs(2:imax,jmax-1) );
-%     S_p(2:imax,jmax-1)= ( Dn(2:imax,jmax-1) ...
-%         - (1-alphan(2:imax,jmax-1)) .*Fn(2:imax,jmax-1) );
-        S_p_n= ( Dn(2:imax,jmax-1) ...
-            - (CoNSv(2:imax,jmax-1)) .*Fn(2:imax,jmax-1) );
-    elseif BC_n_v==3
-        AS_n= -( Ds(2:imax,jmax-1) + ...
-            (1- CoNSv(2:imax,jmax-2)).*Fs(2:imax,jmax-1) );
-    % S_p(2:Nx-1,Ny)=0;
-    end
+
+    AN_n = zeros(size(AN,1),1);
+    S_p_n = ( Dn(2:imax,jmax-1) - (CoNSv(2:imax,jmax-1)) ...
+        .*Fn(2:imax,jmax-1) ) * (BC_n_v==1);
+    S_p(2:imax,jmax-1) = S_p(2:imax,jmax-1) + S_p_n;
     
-    S_p(2,2:jmax-1) = S_p(2,2:jmax-1)+S_p_w;
-    S_p(imax,2:jmax-1) = S_p(imax,2:jmax-1)+S_p_e;
-    S_p(2:imax,2) = S_p(2:imax,2)+S_p_s;
-    S_p(2:imax,jmax-1) = S_p(2:imax,jmax-1)+S_p_n;
+
 
 end
     
-S_p(2,2:jmax-1) = S_p(2,2:jmax-1)+S_p_w;
-S_p(imax,2:jmax-1) = S_p(imax,2:jmax-1)+S_p_e;
-S_p(2:imax,2) = S_p(2:imax,2)+S_p_s;
-S_p(2:imax,jmax-1) = S_p(2:imax,jmax-1)+S_p_n;
 %% 
-AW=[AW_w; AW; AW_e];
-AE=[AE_w; AE; AE_e];
-AS=[AS AS_n];
-AN=[AN_s AN];
+AW=[AW_w; AW];% AW_e];
+AE=[AE; AE_e];
+
+% AS=[AS AS_s];
+% AN=[AN AN_n];
 
 aw_v(2:imax,2:jmax-1)=AW;
 ae_v(2:imax,2:jmax-1)=AE;
@@ -393,36 +350,18 @@ S_ur(2:imax,2:jmax-1) = ap_v(2:imax,2:jmax-1)* coef.* V_star_old(2:imax,2:jmax-1
 
 % ==== Boundary Condition Contribution
 %WEST   i=2
-if BC_w_v==1
-    S_u_w= V_a(:,2:jmax-1).*...
-        S_p_w;
-elseif BC_w_v==3
-    S_u_w=0;
-end
-
+S_u_w = V_a(:,2:jmax-1).*S_p_w * (BC_w_v == 1);
 %EAST   i=Nx
-if BC_e_v==1
-    S_u_e=V_b(:,2:jmax-1).*...
-        S_p_e;
-elseif BC_e_v==3
-    S_u_e=0;
-end
+S_u_e = V_b(:,2:jmax-1).*S_p_e * (BC_e_v == 1);
+
 
 %SOUTH   j=2
-if BC_s_v==1
-    S_u_s= S_p_s.*V_c(:,2:imax);
-elseif BC_s_v==3
-    S_u_s=0;
-end
+S_u_s = V_c(2:imax,:).*S_p_s * (BC_s_v == 1);
+
 
 %NORTH   j=Ny-1
-if BC_s_v==1
-    S_u_n=S_p_n.*V_d(:,2:imax);
-elseif BC_s_v==3
-    S_u_n=0;
-end
+S_u_n = V_d(2:imax,:).*S_p_n * (BC_n_v == 1);
 %=====
-
 
 S_u(2,2:jmax-1)   =   S_u(2,2:jmax-1)+S_u_w;
 S_u(imax,2:jmax-1)  =   S_u(imax,2:jmax-1)+S_u_e;

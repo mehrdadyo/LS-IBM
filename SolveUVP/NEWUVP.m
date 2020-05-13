@@ -135,20 +135,20 @@ end
 
 %% North BC for U
 if BC_n_u==1
-    U(2:imax-1,jmax+1)  = 2*U_d(1,2:imax-1)'-U(2:imax-1,jmax);% Top    (wall, u=0)
+    U(1:imax,jmax+1)  = 2*U_d-U(1:imax,jmax);% Top    (wall, u=0)
 elseif BC_n_u==3
     U(2:imax-1,jmax+1)  = U(2:imax-1,jmax);       % Top    (wall, u=0)
 end
 
 %% South BC for U
 if BC_s_u==1
-    U(2:imax-1,1)       = 2*U_c(1,2:imax-1)'-U(2:imax-1,2); % Bottom (wall, u=0)
+    U(1:imax,1)       = 2*U_c-U(1:imax,2); % Bottom (wall, u=0)
 elseif BC_s_u==3
      U(1:imax,1)       = U(1:imax,2);          % Bottom (wall, u=0)
 end
 % %% Extra B.C.'s needed for calculation of vorticity in corners
-U(1,1)         = U_a(1,1);                  % Left- Bottom
-U(1,jmax)    = U(1,end);                    % Left- Top
+% U(1,1)         = U_a(1,1);                  % Left- Bottom
+% U(1,jmax)    = U(1,end);                    % Left- Top
 U(imax,1)      = U(imax,2);                 % Right- Bottom
 U(imax,jmax+1) = U(imax,jmax);              % Right- Top
 
@@ -178,27 +178,27 @@ end
 %% Apply BC's to V
 %% North BC for V
 if BC_n_v==1
-    V(2:imax,jmax)  = V_d(1,2:imax)';           % Top    (wall, v=0)
+    V(2:imax,jmax)  = V_d(2:imax,1);           % Top    (wall, v=0)
 elseif BC_n_v==3
     V(2:imax,jmax)  = V(2:imax,jmax-1);            % Top    (wall, v=0)
 end
 
 %% South BC for V
 if BC_s_v==1
-    V(2:imax,1)     =  V_c(1,2:imax)';             % Bottom (wall, v=0)
+    V(2:imax,1)     =  V_c(2:imax,1);             % Bottom (wall, v=0)
 elseif BC_s_v==3
     V(2:imax,1)     = V(2:imax,2);                 % Bottom (wall, v=0)
 end
 
 % V(1,2:jmax-1)     = 2*V_a(1,2:jmax-1)-V(2,2:jmax-1); 
-V(1,2:jmax-1)      = V(2,2:jmax-1);                % Left  (inlet, v=0)
+V(1,2:jmax-1)      = -V(2,2:jmax-1);                % Left  (inlet, v=0)
 V(imax+1,2:jmax-1)= V(imax,2:jmax-1);          % Right  (outlet, dv/dx=0)
 %% Extra B.C.'s for calculation of vorticity in corner points
-V(1,1)         = 0;%-V(2,1);                    % Bottom- Left
-V(1,jmax)      = 0;%-V(1,jmax-1);               % Top- Left
-V(imax+1,1)    = 0;%V(imax,1);                  % Bottom- Right
-V(imax+1,jmax) = 0;%V(imax+1,jmax-1);           % Top- Right
-
+% V(1,1)         = 0;%-V(2,1);                    % Bottom- Left
+% V(1,jmax)      = 0;%-V(1,jmax-1);               % Top- Left
+% V(imax+1,1)    = 0;%V(imax,1);                  % Bottom- Right
+% V(imax+1,jmax) = 0;%V(imax+1,jmax-1);           % Top- Right
+% 
 %% Compute new pressure
 for j = 2:jmax
   for i = 2:imax
